@@ -766,6 +766,7 @@ function renderItems() {
         <button class="btn btn-s" onclick="openStockMoveModal('${it.id}','in')">📥 وارد</button>
         <button class="btn btn-d" onclick="openStockMoveModal('${it.id}','out')">📤 صادر</button>
       </div>
+      <button class="btn btn-d" style="margin-top:8px;width:100%;font-size:12px;padding:8px" onclick="deleteItem('${it.id}')">🗑 حذف الصنف</button>
     </div>`;
   }).join('');
 }
@@ -799,6 +800,31 @@ function addItem() {
   document.getElementById('mi-payment-wrap').style.display = 'none';
   renderItems(); renderItemSelect(); renderDash(); renderWallets();
   toast('✅ تمت إضافة الصنف');
+}
+
+async function deleteItem(id) {
+  let it = ITEMS.find(i=>i.id===id);
+  if (!it) return;
+  // التحقق: هل الصنف مستخدم في فواتير بيع؟
+  let usedInInvoices = INVOICES.some(inv=>inv.lines.some(l=>l.id===id));
+  if (usedInInvoices) {
+    toast(`❌ لا يمكن حذف "${it.name}" لأنه مستخدم في فواتير بيع`,'er');
+    return;
+  }
+  // التحقق: هل الصنف مستخدم في فواتير شراء؟
+  let usedInPurchases = PURCHASES.some(p=>p.lines.some(l=>l.id===id));
+  if (usedInPurchases) {
+    toast(`❌ لا يمكن حذف "${it.name}" لأنه مستخدم في فواتير شراء`,'er');
+    return;
+  }
+  if (!await confirm2(`حذف الصنف "${it.name}" نهائياً؟`)) return;
+  ITEMS = ITEMS.filter(i=>i.id!==id);
+  // حذف حركاته من سجل الحركات
+  MOVES = MOVES.filter(m=>m.itemId!==id);
+  save(KEYS.items, ITEMS);
+  save(KEYS.moves, MOVES);
+  renderItems(); renderItemSelect(); renderDash(); renderMoves();
+  toast(`✅ تم حذف الصنف "${it.name}"`);
 }
 
 // ==================== STOCK MOVE MODAL ====================
