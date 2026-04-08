@@ -1,1 +1,0 @@
-/* File: barcode.js */

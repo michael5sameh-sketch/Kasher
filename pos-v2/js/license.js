@@ -1,1 +1,0 @@
-/* File: license.js */
