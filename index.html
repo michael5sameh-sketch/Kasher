@@ -1,1333 +1,450 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="نظام المبيعات">
-<meta name="theme-color" content="#0b0f18">
-<title>نظام إدارة المبيعات - خزائن متعددة</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
-<style>
-:root{
-  --bg:#0b0f18; --s1:#111827; --s2:#1a2233; --s3:#212d42;
-  --b1:#2a3547; --b2:#374151;
-  --ac:#00d4aa; --ac2:#38bdf8;
-  --gr:#10b981; --rd:#ef4444; --or:#f59e0b; --pu:#a78bfa;
-  --t1:#f0f6fc; --t2:#9ca3af; --t3:#6b7280;
-  --rS:10px; --rM:14px; --rL:18px;
-}
-*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{height:100%;overflow:hidden;font-family:'Cairo',sans-serif;background:var(--bg);color:var(--t1)}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="نظام المبيعات">
+  <meta name="theme-color" content="#0b0f18">
+  <title>نظام إدارة المبيعات</title>
 
-/* ===== LOCK SCREEN ===== */
-#lock{position:fixed;inset:0;z-index:9999;background:radial-gradient(ellipse at 50% 30%,#0f2030,var(--bg) 70%);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;}
-.lk-ico{font-size:60px;margin-bottom:14px;animation:lkfloat 3s ease-in-out infinite}
-@keyframes lkfloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
-.lk-ttl{font-size:22px;font-weight:900;margin-bottom:4px}
-.lk-sub{font-size:12px;color:var(--t2);margin-bottom:36px}
-.lk-box{background:var(--s1);border:1px solid var(--b1);border-radius:var(--rL);padding:26px 22px;width:100%;max-width:320px;box-shadow:0 24px 64px rgba(0,0,0,.5)}
-.lk-prompt{font-size:14px;font-weight:700;color:var(--t2);text-align:center;margin-bottom:18px}
-.dots{display:flex;gap:12px;justify-content:center;margin-bottom:24px}
-.dot{width:13px;height:13px;border-radius:50%;background:var(--s3);border:2px solid var(--b2);transition:.18s}
-.dot.on{background:var(--ac);border-color:var(--ac);transform:scale(1.15)}
-.npad{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
-.k{background:var(--s2);border:1px solid var(--b1);border-radius:var(--rM);padding:15px 8px;font-family:'Cairo',sans-serif;font-size:21px;font-weight:700;color:var(--t1);cursor:pointer;text-align:center;transition:.12s;-webkit-user-select:none;user-select:none}
-.k:active{background:rgba(0,212,170,.18);transform:scale(.93)}
-.k.del{font-size:17px;color:var(--rd)}
-.k.go{font-size:13px;color:var(--ac);font-weight:900}
-.lk-err{text-align:center;color:var(--rd);font-size:12px;margin-top:12px;min-height:18px}
-.shake{animation:shake .35s ease}
-@keyframes shake{0%,100%{transform:translateX(0)}25%,75%{transform:translateX(-5px)}50%{transform:translateX(5px)}}
+  <!-- ===== الخطوط ===== -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
 
-/* ===== APP SHELL ===== */
-#app{display:none;flex-direction:column;height:100%}
-#app.on{display:flex}
-.topbar{flex-shrink:0;background:var(--s1);border-bottom:1px solid var(--b1);padding:14px 16px 12px;padding-top:calc(14px + env(safe-area-inset-top));display:flex;align-items:center;justify-content:space-between}
-.tb-info .tb-name{font-size:16px;font-weight:900;line-height:1.2}
-.tb-info .tb-date{font-size:11px;color:var(--t2);margin-top:2px}
-.tb-acts{display:flex;gap:6px}
-.ib{background:none;border:none;font-size:20px;cursor:pointer;padding:6px;color:var(--t2)}
-.scroll{flex:1;overflow-y:auto;overflow-x:hidden;padding:14px 13px 90px;-webkit-overflow-scrolling:touch}
-.scroll::-webkit-scrollbar{width:3px}
-.scroll::-webkit-scrollbar-thumb{background:var(--b1);border-radius:4px}
-.bnav{flex-shrink:0;background:var(--s1);border-top:1px solid var(--b1);display:flex;padding-bottom:env(safe-area-inset-bottom)}
-.nb{flex:1;display:flex;flex-direction:column;align-items:center;padding:10px 4px 8px;border:none;background:none;font-family:'Cairo',sans-serif;color:var(--t3);cursor:pointer;transition:color .15s;-webkit-user-select:none;user-select:none}
-.nb .ni{font-size:21px;margin-bottom:3px;transition:transform .15s}
-.nb .nl{font-size:10px;font-weight:700}
-.nb.on{color:var(--ac)}
-.nb.on .ni{transform:scale(1.2)}
-.pg{display:none}.pg.on{display:block}
-
-/* ===== MODAL ===== */
-.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:500;display:flex;align-items:flex-end;justify-content:center;animation:mbgin .2s ease}
-@keyframes mbgin{from{opacity:0}to{opacity:1}}
-.modal{background:var(--s1);border:1px solid var(--b1);border-radius:var(--rL) var(--rL) 0 0;width:100%;max-width:600px;max-height:90vh;overflow-y:auto;padding:24px 18px 32px;animation:msin .25s ease}
-@keyframes msin{from{transform:translateY(40px);opacity:0}to{transform:translateY(0);opacity:1}}
-.modal-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
-.modal-ttl{font-size:17px;font-weight:900}
-.modal-x{background:var(--s3);border:none;color:var(--t2);border-radius:50%;width:32px;height:32px;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center}
-
-/* ===== CARDS & COMMON ===== */
-.card{background:var(--s1);border:1px solid var(--b1);border-radius:var(--rL);padding:16px;margin-bottom:11px}
-.card-hd{font-size:11px;font-weight:800;color:var(--t2);letter-spacing:.8px;text-transform:uppercase;margin-bottom:13px;display:flex;align-items:center;gap:6px}
-.row-b{display:flex;justify-content:space-between;align-items:center}
-.sec-ttl{font-size:18px;font-weight:900}
-.divider{border:none;border-top:1px solid var(--b1);margin:10px 0}
-.bdg{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700}
-.bg{background:rgba(16,185,129,.15);color:var(--gr)}
-.br{background:rgba(239,68,68,.15);color:var(--rd)}
-.by{background:rgba(245,158,11,.15);color:var(--or)}
-.kgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:11px}
-@media(min-width:580px){.kgrid{grid-template-columns:repeat(4,1fr)}}
-.kpi{background:var(--s1);border:1px solid var(--b1);border-radius:var(--rL);padding:15px 13px;overflow:hidden;position:relative}
-.kpi .ki{font-size:22px;margin-bottom:7px}
-.kpi .kv{font-size:19px;font-weight:900}
-.kpi .kl{font-size:11px;color:var(--t2);margin-top:3px}
-
-/* ===== FORMS ===== */
-.fi,.fs{width:100%;background:var(--s2);border:1px solid var(--b1);border-radius:var(--rS);padding:11px 13px;color:var(--t1);font-family:'Cairo',sans-serif;font-size:14px;outline:none}
-.fi:focus,.fs:focus{border-color:var(--ac)}
-.fl{display:block;font-size:12px;font-weight:700;color:var(--t2);margin-bottom:6px}
-.fg{margin-bottom:13px}
-.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
-
-/* ===== BUTTONS ===== */
-.btn{border:none;border-radius:var(--rM);padding:12px 16px;font-family:'Cairo',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all .14s;display:flex;align-items:center;gap:7px;justify-content:center}
-.btn:active{transform:scale(.96);opacity:.87}
-.btn-p{background:linear-gradient(135deg,var(--ac),#00b894);color:#0b0f18;width:100%}
-.btn-s{background:rgba(0,212,170,.1);color:var(--ac);border:1px solid rgba(0,212,170,.25)}
-.btn-d{background:rgba(239,68,68,.1);color:var(--rd);border:1px solid rgba(239,68,68,.25)}
-.btn-b{background:rgba(56,189,248,.1);color:var(--ac2);border:1px solid rgba(56,189,248,.25)}
-
-/* ===== INVOICE LINES ===== */
-.iline{background:var(--s2);border:1px solid var(--b1);border-radius:var(--rM);padding:13px;margin-bottom:9px;position:relative}
-.del-btn{position:absolute;top:10px;left:10px;background:none;border:none;font-size:17px;color:var(--rd);cursor:pointer}
-.qrow{display:flex;align-items:center;gap:10px;margin-top:9px}
-.qb{width:33px;height:33px;border-radius:9px;background:var(--s1);border:1px solid var(--b1);color:var(--t1);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center}
-.qv{font-size:16px;font-weight:800;min-width:26px;text-align:center}
-.itotal{background:linear-gradient(135deg,rgba(0,212,170,.07),rgba(0,212,170,.02));border:1px solid rgba(0,212,170,.18);border-radius:var(--rL);padding:15px;margin:11px 0}
-.irow{display:flex;justify-content:space-between;font-size:13px;margin-bottom:7px;align-items:center}
-.irow.big{font-size:16px;font-weight:900;color:var(--ac);margin-bottom:0}
-.disc-i{width:80px;background:var(--s2);border:1px solid var(--b1);border-radius:8px;padding:4px 8px;color:var(--t1);text-align:center;font-family:'Cairo',sans-serif;font-size:13px;outline:none}
-.disc-i:focus{border-color:var(--ac)}
-
-/* ===== SEARCH ===== */
-.search-wrap{position:relative;margin-bottom:12px}
-.search-wrap .fi{padding-right:36px}
-.search-ico{position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:16px;color:var(--t3);pointer-events:none}
-.empty{text-align:center;padding:36px 16px;color:var(--t3)}
-
-/* ===== INVOICE CARD ===== */
-.inv-card{background:var(--s1);border:1px solid var(--b1);border-radius:var(--rM);padding:14px;margin-bottom:9px;cursor:pointer;transition:border-color .15s}
-.inv-card:active{border-color:var(--ac)}
-
-/* ===== TOAST ===== */
-.toast{position:fixed;bottom:86px;left:50%;transform:translateX(-50%);background:var(--s2);border:1px solid var(--b1);border-radius:11px;padding:10px 20px;font-size:13px;font-weight:700;z-index:8000;white-space:nowrap;animation:tin .22s ease,tout .22s ease 2.3s forwards}
-.toast.ok{border-color:var(--gr);color:var(--gr)}
-.toast.er{border-color:var(--rd);color:var(--rd)}
-@keyframes tin{from{opacity:0;transform:translate(-50%,14px)}to{opacity:1;transform:translate(-50%,0)}}
-@keyframes tout{to{opacity:0;transform:translate(-50%,8px)}}
-
-/* ===== CONFIRM ===== */
-.confirm-bg{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:600;display:flex;align-items:center;justify-content:center;padding:24px}
-.confirm-box{background:var(--s1);border:1px solid var(--b1);border-radius:var(--rL);padding:24px;width:100%;max-width:320px}
-.confirm-msg{font-size:15px;font-weight:700;line-height:1.5;text-align:center}
-.confirm-btns{display:flex;gap:12px;margin-top:24px}
-.confirm-btns .btn{flex:1}
-
-/* ===== TABS ===== */
-.tabs{display:flex;background:var(--s2);border-radius:var(--rS);padding:3px;margin-bottom:14px;gap:3px}
-.tab{flex:1;padding:8px;border:none;background:none;font-family:'Cairo',sans-serif;font-size:13px;font-weight:700;color:var(--t2);border-radius:8px;cursor:pointer;transition:all .15s}
-.tab.on{background:var(--s1);color:var(--t1)}
-
-/* ===== REPORTS ===== */
-.brow{display:flex;align-items:center;gap:8px;margin-bottom:8px}
-.blbl{width:70px;font-size:12px;font-weight:700}
-.bwrap{flex:1;background:var(--s2);border-radius:20px;overflow:hidden}
-.bfill{background:var(--ac);color:#0b0f18;padding:5px 8px;border-radius:20px;font-size:12px;font-weight:700;white-space:nowrap}
-
-/* ===== ITEMS IN STOCK PAGE ===== */
-.item-card{background:var(--s1);border:1px solid var(--b1);border-radius:var(--rL);padding:16px;margin-bottom:11px}
-.item-name{font-size:15px;font-weight:800;margin-bottom:4px}
-.item-id{font-size:11px;color:var(--t3);margin-bottom:10px}
-.item-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:12px}
-.item-stat{background:var(--s2);border-radius:var(--rS);padding:8px 10px;text-align:center}
-.item-stat .sv{font-size:15px;font-weight:900}
-.item-stat .sl{font-size:10px;color:var(--t2);margin-top:2px}
-.item-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-
-/* ===== PURCHASE LINES ===== */
-.pline{background:var(--s2);border:1px solid var(--b1);border-radius:var(--rM);padding:12px;margin-bottom:8px;position:relative}
-.pline select,.pline input{width:100%;background:var(--s3);border:1px solid var(--b1);border-radius:var(--rS);padding:8px 10px;color:var(--t1);font-family:'Cairo',sans-serif;font-size:13px;outline:none;margin-bottom:7px}
-.pline select:focus,.pline input:focus{border-color:var(--ac)}
-.pline .del-pline{position:absolute;top:10px;left:10px;background:none;border:none;font-size:16px;color:var(--rd);cursor:pointer}
-.pline-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.pline-row input{margin-bottom:0}
-
-/* ===== STOCK MOVE MODAL ===== */
-.payment-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:13px}
-.payment-btn{background:var(--s2);border:2px solid var(--b1);border-radius:var(--rM);padding:12px 8px;font-family:'Cairo',sans-serif;font-size:13px;font-weight:700;color:var(--t2);cursor:pointer;transition:all .15s;text-align:center}
-.payment-btn.on{border-color:var(--ac);color:var(--ac);background:rgba(0,212,170,.08)}
-.payment-btn.on-bank{border-color:var(--ac2);color:var(--ac2);background:rgba(56,189,248,.08)}
-.payment-btn.on-sup{border-color:var(--pu);color:var(--pu);background:rgba(167,139,250,.08)}
-</style>
+  <!-- ===================================================
+       CSS — الترتيب مهم جداً
+       variables.css لازم يجي أول حاجة لأن كل الملفات التانية بتستخدم متغيراته
+  ==================================================== -->
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/lock.css">
+  <link rel="stylesheet" href="css/modals.css">
+  <link rel="stylesheet" href="css/pages.css">
+  <link rel="stylesheet" href="css/toast.css">
 </head>
 <body>
 
-<!-- ===== LOCK SCREEN ===== -->
-<div id="lock">
-  <div class="lk-ico">🏪</div>
-  <div class="lk-ttl">نظام إدارة المبيعات</div>
-  <div class="lk-sub">متعدد الخزائن</div>
-  <div class="lk-box" id="lkbox">
-    <div class="lk-prompt">أدخل رمز التفعيل</div>
-    <div class="dots">
-      <div class="dot" id="d0"></div><div class="dot" id="d1"></div>
-      <div class="dot" id="d2"></div><div class="dot" id="d3"></div>
-    </div>
-    <div class="npad">
-      <button class="k" onclick="kp('1')">١</button><button class="k" onclick="kp('2')">٢</button><button class="k" onclick="kp('3')">٣</button>
-      <button class="k" onclick="kp('4')">٤</button><button class="k" onclick="kp('5')">٥</button><button class="k" onclick="kp('6')">٦</button>
-      <button class="k" onclick="kp('7')">٧</button><button class="k" onclick="kp('8')">٨</button><button class="k" onclick="kp('9')">٩</button>
-      <button class="k del" onclick="kdel()">⌫</button><button class="k" onclick="kp('0')">٠</button><button class="k go" onclick="kgo()">دخول</button>
-    </div>
-    <div class="lk-err" id="lerr"></div>
-  </div>
-</div>
+  <!-- ===== شاشة القفل / الترخيص ===== -->
+  <!-- المحتوى هيتحمل من lock.js -->
+  <div id="lock-screen"></div>
 
-<!-- ===== MAIN APP ===== -->
-<div id="app">
-  <div class="topbar">
-    <div class="tb-info">
-      <div class="tb-name" id="pgTitle">🏠 لوحة التحكم</div>
-      <div class="tb-date" id="pgDate"></div>
-    </div>
-    <div class="tb-acts"><button class="ib" onclick="lockApp()">🔒</button></div>
-  </div>
+  <!-- ===== التطبيق الرئيسي ===== -->
+  <div id="app">
 
-  <div class="scroll" id="scroller">
-
-    <!-- DASHBOARD -->
-    <div class="pg on" id="pg-dash">
-      <div class="kgrid">
-        <div class="kpi"><div class="ki">💰</div><div class="kv" id="kpi-td">0</div><div class="kl">مبيعات اليوم (ج)</div></div>
-        <div class="kpi"><div class="ki">📅</div><div class="kv" id="kpi-mo">0</div><div class="kl">مبيعات الشهر (ج)</div></div>
-        <div class="kpi"><div class="ki">📈</div><div class="kv" id="kpi-pr">0</div><div class="kl">صافي الربح (ج)</div></div>
-        <div class="kpi"><div class="ki">🧾</div><div class="kv" id="kpi-ic">0</div><div class="kl">فواتير اليوم</div></div>
+    <!-- Topbar -->
+    <div class="topbar">
+      <div class="tb-info">
+        <div class="tb-name" id="pgTitle">🏠 لوحة التحكم</div>
+        <div class="tb-date" id="pgDate"></div>
       </div>
-      <div class="card">
-        <div class="card-hd">💰 أرصدة الخزائن</div>
-        <div class="irow"><span>💵 نقدي</span><span id="wallet-cash" style="color:var(--ac);font-weight:bold">0 ج</span></div>
-        <div class="irow"><span>🏦 بنك</span><span id="wallet-bank" style="color:var(--ac2);font-weight:bold">0 ج</span></div>
-        <div class="irow"><span>📝 آجل (عملاء)</span><span id="wallet-credit" style="color:var(--or);font-weight:bold">0 ج</span></div>
-        <div class="irow"><span>🏭 موردين (آجل)</span><span id="wallet-suppliers" style="color:var(--pu);font-weight:bold">0 ج</span></div>
+      <div class="tb-acts">
+        <!-- زرار الشراء الثابت — يظهر دايماً في أقصى الشمال -->
+        <button class="ib" id="btn-buy" onclick="_showPurchaseScreen()"
+          title="شراء الترخيص الكامل"
+          style="color:var(--ac);font-size:16px;font-weight:900">🛒</button>
+        <button class="ib" onclick="lockApp()" title="قفل">🔒</button>
       </div>
-      <div class="card"><div class="card-hd">🏆 أفضل الأصناف</div><div id="d-top"></div></div>
-      <div class="card"><div class="card-hd">⚠️ تحذيرات المخزون</div><div id="d-warn"></div></div>
-      <div class="card"><div class="card-hd">🧾 آخر الفواتير</div><div id="d-last"></div></div>
     </div>
 
-    <!-- SALES -->
-    <div class="pg" id="pg-sales">
-      <div class="tabs">
-        <button class="tab on" onclick="sTab(this,'stab-new')">➕ فاتورة جديدة</button>
-        <button class="tab" onclick="sTab(this,'stab-list')">🧾 الفواتير</button>
-      </div>
-      <div id="stab-new">
+    <!-- المحتوى الرئيسي -->
+    <div class="scroll" id="scroller">
+
+      <!-- Dashboard -->
+      <div class="pg on" id="pg-dash">
+        <div class="kgrid">
+          <div class="kpi"><div class="ki">💰</div><div class="kv" id="kpi-td">0</div><div class="kl">مبيعات اليوم (ج)</div></div>
+          <div class="kpi"><div class="ki">📅</div><div class="kv" id="kpi-mo">0</div><div class="kl">مبيعات الشهر (ج)</div></div>
+          <div class="kpi"><div class="ki">📈</div><div class="kv" id="kpi-pr">0</div><div class="kl">صافي الربح (ج)</div></div>
+          <div class="kpi"><div class="ki">🧾</div><div class="kv" id="kpi-ic">0</div><div class="kl">فواتير اليوم</div></div>
+        </div>
         <div class="card">
-          <div class="fg"><label class="fl">اسم العميل</label><input class="fi" id="si-cust" placeholder="اختياري" list="clist"><datalist id="clist"></datalist></div>
-          <div class="fg"><label class="fl">طريقة الدفع</label>
-            <select class="fs" id="si-payment">
-              <option value="cash">💵 نقدي</option>
-              <option value="bank">🏦 تحويل بنكي</option>
-              <option value="credit">📝 آجل (دين)</option>
+          <div class="card-hd">💰 أرصدة الخزائن</div>
+          <div class="irow"><span>💵 نقدي</span><span id="wallet-cash"  style="color:var(--ac);font-weight:bold">0 ج</span></div>
+          <div class="irow"><span>🏦 بنك</span><span id="wallet-bank"   style="color:var(--ac2);font-weight:bold">0 ج</span></div>
+          <div class="irow"><span>📝 آجل (عملاء)</span><span id="wallet-credit"    style="color:var(--or);font-weight:bold">0 ج</span></div>
+          <div class="irow"><span>🏭 موردين (آجل)</span><span id="wallet-suppliers" style="color:var(--pu);font-weight:bold">0 ج</span></div>
+        </div>
+        <div class="card"><div class="card-hd">🏆 أفضل الأصناف</div><div id="d-top"></div></div>
+        <div class="card"><div class="card-hd">⚠️ تحذيرات المخزون</div><div id="d-warn"></div></div>
+        <div class="card"><div class="card-hd">🧾 آخر الفواتير</div><div id="d-last"></div></div>
+      </div>
+
+      <!-- Sales -->
+      <div class="pg" id="pg-sales">
+        <div class="tabs">
+          <button class="tab on" onclick="sTab(this,'stab-new')">➕ فاتورة جديدة</button>
+          <button class="tab"    onclick="sTab(this,'stab-list')">🧾 الفواتير</button>
+        </div>
+        <div id="stab-new">
+          <div class="card">
+            <div class="fg"><label class="fl">اسم العميل</label><input class="fi" id="si-cust" placeholder="اختياري" list="clist"><datalist id="clist"></datalist></div>
+            <div class="fg"><label class="fl">طريقة الدفع</label>
+              <select class="fs" id="si-payment">
+                <option value="cash">💵 نقدي</option>
+                <option value="bank">🏦 تحويل بنكي</option>
+                <option value="credit">📝 آجل (دين)</option>
+              </select>
+            </div>
+            <div class="fg">
+              <label class="fl">أضف صنف</label>
+              <div style="display:flex;gap:8px;align-items:center">
+                <select class="fs" id="si-item" onchange="addLine()" style="flex:1">
+                  <option value="">— اختر صنف —</option>
+                </select>
+                <!-- زرار الباركود — هيتفعل من barcode.js -->
+                <button class="btn btn-b" style="padding:10px 12px;flex-shrink:0" onclick="openBarcodeScanner('sales')" title="مسح باركود">📷</button>
+              </div>
+            </div>
+          </div>
+          <div id="inv-lines"></div>
+          <div class="itotal" id="inv-tbox" style="display:none">
+            <div class="irow"><span>الإجمالي</span><span id="it-sub">0 ج</span></div>
+            <div class="irow"><span>خصم (ج)</span><input type="number" class="disc-i" id="it-disc" value="0" min="0" oninput="calcInv()"></div>
+            <div class="irow"><span id="it-tax-label">ضريبة</span><span id="it-tax">0 ج</span></div>
+            <hr class="divider">
+            <div class="irow big"><span>💰 الإجمالي النهائي</span><span id="it-ttl">0 ج</span></div>
+          </div>
+          <button class="btn btn-p" id="sv-inv" onclick="saveInv()" style="display:none">💾 حفظ الفاتورة</button>
+        </div>
+        <div id="stab-list" style="display:none">
+          <div class="search-wrap"><span class="search-ico">🔍</span><input class="fi" id="inv-search" placeholder="بحث..." oninput="renderInvList()"></div>
+          <div id="inv-list"></div>
+        </div>
+      </div>
+
+      <!-- Inventory -->
+      <div class="pg" id="pg-inv">
+        <div class="tabs">
+          <button class="tab on" onclick="iTab(this,'itab-items')">📦 الأصناف</button>
+          <button class="tab"    onclick="iTab(this,'itab-purchases')">🛒 فواتير الشراء</button>
+          <button class="tab"    onclick="iTab(this,'itab-moves')">🔄 الحركات</button>
+        </div>
+        <div id="itab-items">
+          <div class="row-b" style="margin-bottom:12px">
+            <div class="sec-ttl" style="font-size:16px">الأصناف</div>
+            <button class="btn btn-s" style="padding:8px 14px;font-size:13px" onclick="openModal('m-additem')">➕ صنف جديد</button>
+          </div>
+          <div style="display:flex;gap:8px;margin-bottom:12px">
+            <div class="search-wrap" style="flex:1;margin-bottom:0"><span class="search-ico">🔍</span><input class="fi" id="item-search" placeholder="بحث عن صنف..." oninput="renderItems()"></div>
+            <button class="btn btn-b" style="padding:10px 12px;flex-shrink:0" onclick="openBarcodeScanner('inventory')" title="مسح باركود">📷</button>
+          </div>
+          <div id="items-list"></div>
+        </div>
+        <div id="itab-purchases" style="display:none">
+          <div class="row-b" style="margin-bottom:12px">
+            <div class="sec-ttl" style="font-size:16px">فواتير الشراء</div>
+            <button class="btn btn-p" style="padding:8px 14px;font-size:13px" onclick="openModal('m-purchase')">➕ فاتورة شراء</button>
+          </div>
+          <div id="purchases-list"></div>
+        </div>
+        <div id="itab-moves" style="display:none"><div id="moves-list"></div></div>
+      </div>
+
+      <!-- Reports -->
+      <div class="pg" id="pg-rep">
+        <div class="sec-ttl" style="margin-bottom:14px">📊 التقارير</div>
+        <div class="card">
+          <div class="card-hd">📅 فترة التقرير</div>
+          <div class="g2">
+            <div class="fg"><label class="fl">من</label><input type="date" class="fi" id="rep-from" onchange="renderReports()"></div>
+            <div class="fg"><label class="fl">إلى</label><input type="date" class="fi" id="rep-to"   onchange="renderReports()"></div>
+          </div>
+        </div>
+        <div class="card"><div class="card-hd">📈 قائمة الدخل</div><div id="report-income"></div></div>
+        <div class="card"><div class="card-hd">📅 المبيعات الشهرية</div><div id="r-monthly"></div></div>
+        <div class="card"><div class="card-hd">🔄 المرتجعات</div><div id="r-ret"></div></div>
+      </div>
+
+      <!-- Customers -->
+      <div class="pg" id="pg-cust">
+        <div class="tabs">
+          <button class="tab on" onclick="cTab(this,'ctab-list')">👥 العملاء</button>
+          <button class="tab"    onclick="cTab(this,'ctab-add')">➕ إضافة</button>
+        </div>
+        <div id="ctab-list">
+          <div class="search-wrap"><span class="search-ico">🔍</span><input class="fi" id="cust-search" placeholder="بحث..." oninput="renderCusts()"></div>
+          <div id="cust-list"></div>
+        </div>
+        <div id="ctab-add" style="display:none">
+          <div class="card">
+            <div class="fg"><label class="fl">الاسم الكامل</label><input class="fi" id="nc-name"></div>
+            <div class="fg"><label class="fl">رقم التليفون</label><input class="fi" id="nc-phone" type="tel"></div>
+            <div class="fg"><label class="fl">العنوان</label><input class="fi" id="nc-addr"></div>
+            <button class="btn btn-p" onclick="addCust()">💾 حفظ</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Treasury -->
+      <div class="pg" id="pg-treas">
+        <div class="tabs">
+          <button class="tab on" onclick="tTab(this,'ttab-summary')">💰 الأرصدة</button>
+          <button class="tab"    onclick="tTab(this,'ttab-add')">➕ حركة يدوية</button>
+          <button class="tab"    onclick="tTab(this,'ttab-history')">📋 السجل</button>
+        </div>
+        <div id="ttab-summary">
+          <div class="card">
+            <div class="irow"><span>💵 النقدية</span><span id="wallet-cash2"      style="color:var(--ac);font-weight:bold">0 ج</span></div>
+            <div class="irow"><span>🏦 البنك</span><span id="wallet-bank2"        style="color:var(--ac2);font-weight:bold">0 ج</span></div>
+            <div class="irow"><span>📝 آجل (عملاء)</span><span id="wallet-credit2"    style="color:var(--or);font-weight:bold">0 ج</span></div>
+            <div class="irow"><span>🏭 موردين (آجل)</span><span id="wallet-suppliers2" style="color:var(--pu);font-weight:bold">0 ج</span></div>
+          </div>
+          <!-- زرار النسخ الاحتياطي -->
+          <div class="card">
+            <div class="card-hd">💾 النسخ الاحتياطي</div>
+            <div class="g2">
+              <button class="btn btn-s" onclick="exportBackup()">📤 تصدير JSON</button>
+              <button class="btn btn-b" onclick="document.getElementById('import-file').click()">📥 استيراد</button>
+            </div>
+            <input type="file" id="import-file" accept=".json" style="display:none" onchange="importBackup(event)">
+          </div>
+        </div>
+        <div id="ttab-add" style="display:none">
+          <div class="card">
+            <div class="fg"><label class="fl">الخزينة</label>
+              <select class="fs" id="tr-wallet">
+                <option value="cash">💵 نقدي</option>
+                <option value="bank">🏦 بنك</option>
+                <option value="credit">📝 آجل (عملاء)</option>
+                <option value="suppliers">🏭 موردين (آجل)</option>
+              </select>
+            </div>
+            <div class="fg"><label class="fl">نوع الحركة</label>
+              <select class="fs" id="tr-type">
+                <option value="in">⬆️ وارد</option>
+                <option value="out">⬇️ صادر</option>
+              </select>
+            </div>
+            <div class="fg"><label class="fl">المبلغ</label><input type="number" class="fi" id="tr-amount" min="0" placeholder="0.00"></div>
+            <div class="fg"><label class="fl">البيان</label><input class="fi" id="tr-desc" placeholder="وصف الحركة"></div>
+            <div class="fg"><label class="fl">التاريخ</label><input type="date" class="fi" id="tr-date"></div>
+            <button class="btn btn-p" onclick="addManualTransaction()">💾 تسجيل</button>
+          </div>
+        </div>
+        <div id="ttab-history" style="display:none"><div id="tr-list"></div></div>
+      </div>
+
+      <!-- Returns -->
+      <div class="pg" id="pg-ret">
+        <div class="tabs">
+          <button class="tab on" onclick="rTab(this,'rtab-list')">🔄 المرتجعات</button>
+          <button class="tab"    onclick="rTab(this,'rtab-add')">➕ مرتجع جديد</button>
+        </div>
+        <div id="rtab-list"><div id="ret-list"></div></div>
+        <div id="rtab-add" style="display:none">
+          <div class="card">
+            <div class="fg"><label class="fl">رقم الفاتورة الأصلية</label><input class="fi" id="ret-inv" list="invlist" placeholder="INV-0001"><datalist id="invlist"></datalist></div>
+            <div class="fg"><label class="fl">الصنف المرتجع</label><select class="fs" id="ret-item"><option value="">— اختر —</option></select></div>
+            <div class="fg"><label class="fl">الكمية</label><input type="number" class="fi" id="ret-qty" value="1" min="1"></div>
+            <div class="fg"><label class="fl">السبب</label><input class="fi" id="ret-reason" placeholder="سبب الإرجاع"></div>
+            <div class="fg"><label class="fl">طريقة رد المبلغ</label>
+              <select class="fs" id="ret-payment">
+                <option value="cash">💵 نقدي</option>
+                <option value="bank">🏦 بنك</option>
+                <option value="credit">📝 آجل (خصم من الدين)</option>
+              </select>
+            </div>
+            <button class="btn btn-p" onclick="addReturn()">💾 تسجيل المرتجع</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Settings Page -->
+      <div class="pg" id="pg-settings">
+        <div class="sec-ttl" style="margin-bottom:14px">⚙️ الإعدادات</div>
+
+        <!-- إعدادات الضريبة -->
+        <div class="card">
+          <div class="card-hd">🧾 إعدادات الضريبة</div>
+          <div class="fg">
+            <label class="fl">نوع الضريبة</label>
+            <select class="fs" id="tax-mode" onchange="onTaxModeChange()">
+              <option value="none">بدون ضريبة</option>
+              <option value="percent">نسبة مئوية (%)</option>
+              <option value="fixed">مبلغ ثابت (ج)</option>
             </select>
           </div>
-          <div class="fg"><label class="fl">أضف صنف</label><select class="fs" id="si-item" onchange="addLine()"><option value="">— اختر صنف —</option></select></div>
-        </div>
-        <div id="inv-lines"></div>
-        <div class="itotal" id="inv-tbox" style="display:none">
-          <div class="irow"><span>الإجمالي</span><span id="it-sub">0 ج</span></div>
-          <div class="irow"><span>خصم (ج)</span><input type="number" class="disc-i" id="it-disc" value="0" min="0" oninput="calcInv()"></div>
-          <div class="irow"><span>ضريبة 14%</span><span id="it-tax">0 ج</span></div>
-          <hr class="divider">
-          <div class="irow big"><span>💰 الإجمالي النهائي</span><span id="it-ttl">0 ج</span></div>
-        </div>
-        <button class="btn btn-p" id="sv-inv" onclick="saveInv()" style="display:none">💾 حفظ الفاتورة</button>
-      </div>
-      <div id="stab-list" style="display:none">
-        <div class="search-wrap"><span class="search-ico">🔍</span><input class="fi" id="inv-search" placeholder="بحث..." oninput="renderInvList()"></div>
-        <div id="inv-list"></div>
-      </div>
-    </div>
-
-    <!-- INVENTORY -->
-    <div class="pg" id="pg-inv">
-      <div class="tabs">
-        <button class="tab on" onclick="iTab(this,'itab-items')">📦 الأصناف</button>
-        <button class="tab" onclick="iTab(this,'itab-purchases')">🛒 فواتير الشراء</button>
-        <button class="tab" onclick="iTab(this,'itab-moves')">🔄 الحركات</button>
-      </div>
-      <div id="itab-items">
-        <div class="row-b" style="margin-bottom:12px">
-          <div class="sec-ttl" style="font-size:16px">الأصناف</div>
-          <button class="btn btn-s" style="padding:8px 14px;font-size:13px" onclick="openModal('m-additem')">➕ صنف جديد</button>
-        </div>
-        <div class="search-wrap"><span class="search-ico">🔍</span><input class="fi" id="item-search" placeholder="بحث عن صنف..." oninput="renderItems()"></div>
-        <div id="items-list"></div>
-      </div>
-      <div id="itab-purchases" style="display:none">
-        <div class="row-b" style="margin-bottom:12px">
-          <div class="sec-ttl" style="font-size:16px">فواتير الشراء</div>
-          <button class="btn btn-p" style="padding:8px 14px;font-size:13px" onclick="openModal('m-purchase')">➕ فاتورة شراء</button>
-        </div>
-        <div id="purchases-list"></div>
-      </div>
-      <div id="itab-moves" style="display:none"><div id="moves-list"></div></div>
-    </div>
-
-    <!-- REPORTS -->
-    <div class="pg" id="pg-rep">
-      <div class="sec-ttl" style="margin-bottom:14px">📊 التقارير</div>
-      <div class="card">
-        <div class="card-hd">📅 فترة التقرير</div>
-        <div class="g2">
-          <div class="fg"><label class="fl">من</label><input type="date" class="fi" id="rep-from" onchange="renderReports()"></div>
-          <div class="fg"><label class="fl">إلى</label><input type="date" class="fi" id="rep-to" onchange="renderReports()"></div>
-        </div>
-      </div>
-      <div class="card"><div class="card-hd">📈 قائمة الدخل</div><div id="report-income"></div></div>
-      <div class="card"><div class="card-hd">📅 المبيعات الشهرية</div><div id="r-monthly"></div></div>
-      <div class="card"><div class="card-hd">🔄 المرتجعات</div><div id="r-ret"></div></div>
-    </div>
-
-    <!-- CUSTOMERS -->
-    <div class="pg" id="pg-cust">
-      <div class="tabs">
-        <button class="tab on" onclick="cTab(this,'ctab-list')">👥 العملاء</button>
-        <button class="tab" onclick="cTab(this,'ctab-add')">➕ إضافة</button>
-      </div>
-      <div id="ctab-list">
-        <div class="search-wrap"><span class="search-ico">🔍</span><input class="fi" id="cust-search" placeholder="بحث..." oninput="renderCusts()"></div>
-        <div id="cust-list"></div>
-      </div>
-      <div id="ctab-add" style="display:none">
-        <div class="card">
-          <div class="fg"><label class="fl">الاسم الكامل</label><input class="fi" id="nc-name"></div>
-          <div class="fg"><label class="fl">رقم التليفون</label><input class="fi" id="nc-phone" type="tel"></div>
-          <div class="fg"><label class="fl">العنوان</label><input class="fi" id="nc-addr"></div>
-          <button class="btn btn-p" onclick="addCust()">💾 حفظ</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- TREASURY -->
-    <div class="pg" id="pg-treas">
-      <div class="tabs">
-        <button class="tab on" onclick="tTab(this,'ttab-summary')">💰 الأرصدة</button>
-        <button class="tab" onclick="tTab(this,'ttab-add')">➕ حركة يدوية</button>
-        <button class="tab" onclick="tTab(this,'ttab-history')">📋 السجل</button>
-      </div>
-      <div id="ttab-summary">
-        <div class="card">
-          <div class="irow"><span>💵 النقدية</span><span id="wallet-cash2" style="color:var(--ac);font-weight:bold">0 ج</span></div>
-          <div class="irow"><span>🏦 البنك</span><span id="wallet-bank2" style="color:var(--ac2);font-weight:bold">0 ج</span></div>
-          <div class="irow"><span>📝 آجل (عملاء)</span><span id="wallet-credit2" style="color:var(--or);font-weight:bold">0 ج</span></div>
-          <div class="irow"><span>🏭 موردين (آجل)</span><span id="wallet-suppliers2" style="color:var(--pu);font-weight:bold">0 ج</span></div>
-        </div>
-      </div>
-      <div id="ttab-add" style="display:none">
-        <div class="card">
-          <div class="fg"><label class="fl">الخزينة</label>
-            <select class="fs" id="tr-wallet">
-              <option value="cash">💵 نقدي</option>
-              <option value="bank">🏦 بنك</option>
-              <option value="credit">📝 آجل (عملاء)</option>
-              <option value="suppliers">🏭 موردين (آجل)</option>
-            </select>
+          <div class="fg" id="tax-value-wrap">
+            <label class="fl" id="tax-value-label">القيمة</label>
+            <input type="number" class="fi" id="tax-value" min="0" step="0.01" placeholder="0">
           </div>
-          <div class="fg"><label class="fl">نوع الحركة</label>
-            <select class="fs" id="tr-type">
-              <option value="in">⬆️ وارد</option>
-              <option value="out">⬇️ صادر</option>
-            </select>
-          </div>
-          <div class="fg"><label class="fl">المبلغ</label><input type="number" class="fi" id="tr-amount" min="0" placeholder="0.00"></div>
-          <div class="fg"><label class="fl">البيان</label><input class="fi" id="tr-desc" placeholder="وصف الحركة"></div>
-          <div class="fg"><label class="fl">التاريخ</label><input type="date" class="fi" id="tr-date"></div>
-          <button class="btn btn-p" onclick="addManualTransaction()">💾 تسجيل</button>
+          <button class="btn btn-p" onclick="saveTaxSettings()">💾 حفظ إعدادات الضريبة</button>
         </div>
-      </div>
-      <div id="ttab-history" style="display:none"><div id="tr-list"></div></div>
-    </div>
 
-    <!-- RETURNS -->
-    <div class="pg" id="pg-ret">
-      <div class="tabs">
-        <button class="tab on" onclick="rTab(this,'rtab-list')">🔄 المرتجعات</button>
-        <button class="tab" onclick="rTab(this,'rtab-add')">➕ مرتجع جديد</button>
-      </div>
-      <div id="rtab-list"><div id="ret-list"></div></div>
-      <div id="rtab-add" style="display:none">
+        <!-- معلومات الترخيص -->
         <div class="card">
-          <div class="fg"><label class="fl">رقم الفاتورة الأصلية</label><input class="fi" id="ret-inv" list="invlist" placeholder="INV-0001"><datalist id="invlist"></datalist></div>
-          <div class="fg"><label class="fl">الصنف المرتجع</label><select class="fs" id="ret-item"><option value="">— اختر —</option></select></div>
-          <div class="fg"><label class="fl">الكمية</label><input type="number" class="fi" id="ret-qty" value="1" min="1"></div>
-          <div class="fg"><label class="fl">السبب</label><input class="fi" id="ret-reason" placeholder="سبب الإرجاع"></div>
-          <div class="fg"><label class="fl">طريقة رد المبلغ</label>
-            <select class="fs" id="ret-payment">
-              <option value="cash">💵 نقدي</option>
-              <option value="bank">🏦 بنك</option>
-              <option value="credit">📝 آجل (خصم من الدين)</option>
-            </select>
+          <div class="card-hd">🔐 معلومات الترخيص</div>
+          <div class="irow">
+            <span>حالة التفعيل</span>
+            <span class="bdg bg">✅ مفعّل</span>
           </div>
-          <button class="btn btn-p" onclick="addReturn()">💾 تسجيل المرتجع</button>
+          <div class="irow" style="margin-top:8px">
+            <span style="font-size:12px;color:var(--t2)">كود الجهاز:</span>
+            <span style="font-size:12px;color:var(--t3)" id="settings-device-id">—</span>
+          </div>
         </div>
       </div>
-    </div>
 
-  </div><!-- end scroll -->
+    </div><!-- end scroll -->
 
-  <nav class="bnav">
-    <button class="nb on" data-pg="dash" onclick="goPage(this,'🏠 الرئيسية')"><span class="ni">🏠</span><span class="nl">الرئيسية</span></button>
-    <button class="nb" data-pg="sales" onclick="goPage(this,'🛒 المبيعات')"><span class="ni">🛒</span><span class="nl">مبيعات</span></button>
-    <button class="nb" data-pg="inv" onclick="goPage(this,'📦 المخزون')"><span class="ni">📦</span><span class="nl">مخزون</span></button>
-    <button class="nb" data-pg="rep" onclick="goPage(this,'📊 التقارير')"><span class="ni">📊</span><span class="nl">تقارير</span></button>
-    <button class="nb" data-pg="cust" onclick="goPage(this,'👥 العملاء')"><span class="ni">👥</span><span class="nl">عملاء</span></button>
-    <button class="nb" data-pg="treas" onclick="goPage(this,'💰 الخزينة')"><span class="ni">💰</span><span class="nl">خزينة</span></button>
-    <button class="nb" data-pg="ret" onclick="goPage(this,'🔄 المرتجعات')"><span class="ni">🔄</span><span class="nl">مرتجعات</span></button>
-  </nav>
-</div><!-- end app -->
+    <!-- Bottom Navigation -->
+    <nav class="bnav">
+      <button class="nb on" data-pg="dash"     onclick="goPage(this,'🏠 الرئيسية')"><span class="ni">🏠</span><span class="nl">الرئيسية</span></button>
+      <button class="nb"    data-pg="sales"    onclick="goPage(this,'🛒 المبيعات')"><span class="ni">🛒</span><span class="nl">مبيعات</span></button>
+      <button class="nb"    data-pg="inv"      onclick="goPage(this,'📦 المخزون')"><span class="ni">📦</span><span class="nl">مخزون</span></button>
+      <button class="nb"    data-pg="rep"      onclick="goPage(this,'📊 التقارير')"><span class="ni">📊</span><span class="nl">تقارير</span></button>
+      <button class="nb"    data-pg="cust"     onclick="goPage(this,'👥 العملاء')"><span class="ni">👥</span><span class="nl">عملاء</span></button>
+      <button class="nb"    data-pg="treas"    onclick="goPage(this,'💰 الخزينة')"><span class="ni">💰</span><span class="nl">خزينة</span></button>
+      <button class="nb"    data-pg="ret"      onclick="goPage(this,'🔄 المرتجعات')"><span class="ni">🔄</span><span class="nl">مرتجعات</span></button>
+      <button class="nb"    data-pg="settings" onclick="goPage(this,'⚙️ الإعدادات')"><span class="ni">⚙️</span><span class="nl">إعدادات</span></button>
+    </nav>
+  </div><!-- end app -->
 
-<!-- ===== MODALS ===== -->
+  <!-- ===== Modals ===== -->
 
-<!-- Add Item Modal -->
-<div id="m-additem" style="display:none">
-  <div class="modal-bg" onclick="closeModal('m-additem',event)">
-    <div class="modal">
-      <div class="modal-hd">
-        <div class="modal-ttl">➕ إضافة صنف جديد</div>
-        <button class="modal-x" onclick="closeModal('m-additem')">✕</button>
-      </div>
-      <div class="fg"><label class="fl">اسم الصنف</label><input class="fi" id="mi-name" placeholder="اسم الصنف"></div>
-      <div class="g2">
-        <div class="fg"><label class="fl">سعر الشراء (ج)</label><input type="number" class="fi" id="mi-cost" min="0" step="0.01" placeholder="0.00"></div>
-        <div class="fg"><label class="fl">سعر البيع (ج)</label><input type="number" class="fi" id="mi-price" min="0" step="0.01" placeholder="0.00"></div>
-      </div>
-      <div class="g2">
-        <div class="fg"><label class="fl">الكمية الابتدائية</label><input type="number" class="fi" id="mi-stock" value="0" min="0"></div>
-        <div class="fg"><label class="fl">حد إعادة الطلب</label><input type="number" class="fi" id="mi-reorder" value="5" min="0"></div>
-      </div>
-      <div class="fg" id="mi-payment-wrap" style="display:none">
-        <label class="fl">طريقة دفع تكلفة المخزون الابتدائي</label>
-        <select class="fs" id="mi-payment">
-          <option value="cash">💵 نقدي</option>
-          <option value="bank">🏦 بنك</option>
-          <option value="suppliers">📝 آجل (للمورد)</option>
-        </select>
-      </div>
-      <button class="btn btn-p" onclick="addItem()">💾 حفظ الصنف</button>
-    </div>
-  </div>
-</div>
-
-<!-- Purchase Invoice Modal -->
-<div id="m-purchase" style="display:none">
-  <div class="modal-bg" onclick="closeModal('m-purchase',event)">
-    <div class="modal">
-      <div class="modal-hd">
-        <div class="modal-ttl">🛒 فاتورة شراء (توريد)</div>
-        <button class="modal-x" onclick="closeModal('m-purchase')">✕</button>
-      </div>
-      <div class="fg"><label class="fl">المورد / ملاحظات</label><input class="fi" id="p-supplier" placeholder="اسم المورد (اختياري)"></div>
-      <div id="purchase-lines"></div>
-      <button class="btn btn-s" style="margin-bottom:12px" onclick="addPurchaseLine()">➕ إضافة صنف</button>
-      <div class="itotal" id="purchase-total-box">
-        <div class="irow big"><span>إجمالي المشتريات</span><span id="p-total">0 ج</span></div>
-      </div>
-      <div class="fg"><label class="fl">طريقة الدفع</label>
-        <select class="fs" id="p-payment">
-          <option value="cash">💵 نقدي</option>
-          <option value="bank">🏦 بنك</option>
-          <option value="suppliers">📝 آجل (للمورد)</option>
-        </select>
-      </div>
-      <button class="btn btn-p" onclick="savePurchase()">💾 تسجيل الشراء</button>
-    </div>
-  </div>
-</div>
-
-<!-- Stock Move Modal -->
-<div id="m-stockmove" style="display:none">
-  <div class="modal-bg" onclick="closeModal('m-stockmove',event)">
-    <div class="modal">
-      <div class="modal-hd">
-        <div class="modal-ttl" id="sm-title">حركة مخزون</div>
-        <button class="modal-x" onclick="closeModal('m-stockmove')">✕</button>
-      </div>
-      <div id="sm-item-info" style="background:var(--s2);border-radius:var(--rS);padding:12px;margin-bottom:16px;font-size:13px;color:var(--t2)"></div>
-      <div class="fg"><label class="fl">الكمية</label><input type="number" class="fi" id="sm-qty" min="1" value="1" placeholder="أدخل الكمية"></div>
-      <div id="sm-in-fields">
-        <div class="fg"><label class="fl">سعر التكلفة للوحدة (ج)</label><input type="number" class="fi" id="sm-cost" min="0" step="0.01" placeholder="0.00"></div>
+  <!-- إضافة صنف -->
+  <div id="m-additem" style="display:none">
+    <div class="modal-bg" onclick="closeModal('m-additem',event)">
+      <div class="modal">
+        <div class="modal-hd">
+          <div class="modal-ttl">➕ إضافة صنف جديد</div>
+          <button class="modal-x" onclick="closeModal('m-additem')">✕</button>
+        </div>
+        <div class="fg"><label class="fl">اسم الصنف</label><input class="fi" id="mi-name" placeholder="اسم الصنف"></div>
         <div class="fg">
-          <label class="fl">طريقة الدفع</label>
-          <div class="payment-btns">
-            <button class="payment-btn on" id="smb-cash" onclick="selectSMPayment('cash')">💵 نقدي</button>
-            <button class="payment-btn" id="smb-bank" onclick="selectSMPayment('bank')">🏦 بنك</button>
-            <button class="payment-btn" id="smb-suppliers" onclick="selectSMPayment('suppliers')">📝 آجل مورد</button>
-            <button class="payment-btn" id="smb-credit" onclick="selectSMPayment('credit')">🔖 آجل عميل</button>
+          <label class="fl">باركود (اختياري)</label>
+          <div style="display:flex;gap:8px">
+            <input class="fi" id="mi-barcode" placeholder="أدخل الباركود يدوياً" style="flex:1">
+            <button class="btn btn-b" style="padding:10px 12px;flex-shrink:0" onclick="openBarcodeScanner('additem')" title="مسح">📷</button>
           </div>
         </div>
+        <div class="g2">
+          <div class="fg"><label class="fl">سعر الشراء (ج)</label><input type="number" class="fi" id="mi-cost"  min="0" step="0.01" placeholder="0.00"></div>
+          <div class="fg"><label class="fl">سعر البيع (ج)</label><input type="number" class="fi" id="mi-price" min="0" step="0.01" placeholder="0.00"></div>
+        </div>
+        <div class="g2">
+          <div class="fg"><label class="fl">الكمية الابتدائية</label><input type="number" class="fi" id="mi-stock"   value="0" min="0"></div>
+          <div class="fg"><label class="fl">حد إعادة الطلب</label><input type="number" class="fi" id="mi-reorder" value="5" min="0"></div>
+        </div>
+        <div class="fg" id="mi-payment-wrap" style="display:none">
+          <label class="fl">طريقة دفع تكلفة المخزون الابتدائي</label>
+          <select class="fs" id="mi-payment">
+            <option value="cash">💵 نقدي</option>
+            <option value="bank">🏦 بنك</option>
+            <option value="suppliers">📝 آجل (للمورد)</option>
+          </select>
+        </div>
+        <button class="btn btn-p" onclick="addItem()">💾 حفظ الصنف</button>
       </div>
-      <div class="fg"><label class="fl">ملاحظة (اختياري)</label><input class="fi" id="sm-note" placeholder="ملاحظة..."></div>
-      <button class="btn btn-p" onclick="confirmStockMove()">✅ تأكيد</button>
     </div>
   </div>
-</div>
 
-<!-- Invoice Detail Modal -->
-<div id="m-inv" style="display:none">
-  <div class="modal-bg" onclick="closeModal('m-inv',event)">
-    <div class="modal">
-      <div class="modal-hd"><div class="modal-ttl" id="mi-title">تفاصيل الفاتورة</div><button class="modal-x" onclick="closeModal('m-inv')">✕</button></div>
-      <div id="mi-body"></div>
+  <!-- فاتورة شراء -->
+  <div id="m-purchase" style="display:none">
+    <div class="modal-bg" onclick="closeModal('m-purchase',event)">
+      <div class="modal">
+        <div class="modal-hd">
+          <div class="modal-ttl">🛒 فاتورة شراء (توريد)</div>
+          <button class="modal-x" onclick="closeModal('m-purchase')">✕</button>
+        </div>
+        <div class="fg"><label class="fl">المورد / ملاحظات</label><input class="fi" id="p-supplier" placeholder="اسم المورد (اختياري)"></div>
+        <div id="purchase-lines"></div>
+        <button class="btn btn-s" style="margin-bottom:12px" onclick="addPurchaseLine()">➕ إضافة صنف</button>
+        <div class="itotal" id="purchase-total-box">
+          <div class="irow big"><span>إجمالي المشتريات</span><span id="p-total">0 ج</span></div>
+        </div>
+        <div class="fg"><label class="fl">طريقة الدفع</label>
+          <select class="fs" id="p-payment">
+            <option value="cash">💵 نقدي</option>
+            <option value="bank">🏦 بنك</option>
+            <option value="suppliers">📝 آجل (للمورد)</option>
+          </select>
+        </div>
+        <button class="btn btn-p" onclick="savePurchase()">💾 تسجيل الشراء</button>
+      </div>
     </div>
   </div>
-</div>
 
-<!-- Customer Detail Modal -->
-<div id="m-cust" style="display:none">
-  <div class="modal-bg" onclick="closeModal('m-cust',event)">
-    <div class="modal">
-      <div class="modal-hd"><div class="modal-ttl" id="mc-title">بيانات العميل</div><button class="modal-x" onclick="closeModal('m-cust')">✕</button></div>
-      <div id="mc-body"></div>
+  <!-- حركة مخزون -->
+  <div id="m-stockmove" style="display:none">
+    <div class="modal-bg" onclick="closeModal('m-stockmove',event)">
+      <div class="modal">
+        <div class="modal-hd">
+          <div class="modal-ttl" id="sm-title">حركة مخزون</div>
+          <button class="modal-x" onclick="closeModal('m-stockmove')">✕</button>
+        </div>
+        <div id="sm-item-info" style="background:var(--s2);border-radius:var(--rS);padding:12px;margin-bottom:16px;font-size:13px;color:var(--t2)"></div>
+        <div class="fg"><label class="fl">الكمية</label><input type="number" class="fi" id="sm-qty" min="1" value="1"></div>
+        <div id="sm-in-fields">
+          <div class="fg"><label class="fl">سعر التكلفة للوحدة (ج)</label><input type="number" class="fi" id="sm-cost" min="0" step="0.01" placeholder="0.00"></div>
+          <div class="fg">
+            <label class="fl">طريقة الدفع</label>
+            <div class="payment-btns">
+              <button class="payment-btn on"  id="smb-cash"      onclick="selectSMPayment('cash')">💵 نقدي</button>
+              <button class="payment-btn"     id="smb-bank"      onclick="selectSMPayment('bank')">🏦 بنك</button>
+              <button class="payment-btn"     id="smb-suppliers" onclick="selectSMPayment('suppliers')">📝 آجل مورد</button>
+              <button class="payment-btn"     id="smb-credit"    onclick="selectSMPayment('credit')">🔖 آجل عميل</button>
+            </div>
+          </div>
+        </div>
+        <div class="fg"><label class="fl">ملاحظة (اختياري)</label><input class="fi" id="sm-note" placeholder="ملاحظة..."></div>
+        <button class="btn btn-p" onclick="confirmStockMove()">✅ تأكيد</button>
+      </div>
     </div>
   </div>
-</div>
 
-<script>
-"use strict";
-
-// ==================== STORAGE ====================
-const KEYS = {
-  activated:'pos_activated', items:'pos_items', invoices:'pos_invoices',
-  customers:'pos_customers', moves:'pos_moves', wallets:'pos_wallets',
-  transactions:'pos_transactions', returns:'pos_returns',
-  purchases:'pos_purchases', counters:'pos_counters'
-};
-function load(k, def){ try{ const v=localStorage.getItem(k); return v ? JSON.parse(v) : def; } catch{ return def; } }
-function save(k, v){ localStorage.setItem(k, JSON.stringify(v)); }
-
-// ==================== STATE ====================
-let ITEMS        = load(KEYS.items, null);
-let INVOICES     = load(KEYS.invoices, []);
-let PURCHASES    = load(KEYS.purchases, []);
-let CUSTOMERS    = load(KEYS.customers, null);
-let MOVES        = load(KEYS.moves, []);
-let WALLETS      = load(KEYS.wallets, { cash:10000, bank:5000, credit:0, suppliers:0 });
-let TRANSACTIONS = load(KEYS.transactions, []);
-let RETURNS      = load(KEYS.returns, []);
-let CTR          = load(KEYS.counters, { inv:1, purch:1, item:1, cust:1, move:1, ret:1, tr:1 });
-
-// ==================== SEED DATA ====================
-if (!ITEMS) {
-  ITEMS = [
-    {id:'ITM-001', name:'أرز بسمتي 5 كيلو',   avg_cost:45, price:74.10, stock:85,  reorder:10},
-    {id:'ITM-002', name:'زيت طيبة 1.8 لتر',    avg_cost:38, price:62.00, stock:72,  reorder:8},
-    {id:'ITM-003', name:'سكر ناعم كيلو',        avg_cost:12, price:19.50, stock:200, reorder:30},
-    {id:'ITM-004', name:'ماء كريستال 1.5 لتر', avg_cost:3,  price:7.00,  stock:350, reorder:50},
-  ];
-  CTR.item = 5;
-  save(KEYS.items, ITEMS);
-}
-if (!CUSTOMERS) { CUSTOMERS = []; CTR.cust = 1; save(KEYS.customers, CUSTOMERS); }
-if (!WALLETS || !('suppliers' in WALLETS)) {
-  WALLETS = { cash:10000, bank:5000, credit:0, suppliers:0 };
-  save(KEYS.wallets, WALLETS);
-}
-
-// ==================== HELPERS ====================
-function r2(n)      { return Math.round(n * 100) / 100; }
-function pad(n, l)  { return String(n).padStart(l, '0'); }
-function today()    { return new Date().toISOString().slice(0, 10); }
-function fmt(n)     { return Number(n).toLocaleString('ar-EG', {minimumFractionDigits:0, maximumFractionDigits:2}); }
-function walletName(w){ return {cash:'نقدي', bank:'بنك', credit:'آجل عملاء', suppliers:'موردين'}[w] || w; }
-
-// ==================== WALLET / TRANSACTIONS ====================
-function addTransaction(type, wallet, amount, desc, refId, date) {
-  let tx = { id:'TRX-'+pad(CTR.tr++,4), type, wallet, amount:r2(amount), desc, refId, date: date||today() };
-  TRANSACTIONS.push(tx);
-  if (type === 'in')       WALLETS[wallet] = r2((WALLETS[wallet]||0) + amount);
-  else if (type === 'out') WALLETS[wallet] = r2((WALLETS[wallet]||0) - amount);
-  save(KEYS.wallets, WALLETS);
-  save(KEYS.transactions, TRANSACTIONS);
-  save(KEYS.counters, CTR);
-}
-
-function renderWallets() {
-  const set = (id, val) => { const el=document.getElementById(id); if(el) el.innerHTML=fmt(val)+' ج'; };
-  set('wallet-cash',       WALLETS.cash);
-  set('wallet-bank',       WALLETS.bank);
-  set('wallet-credit',     WALLETS.credit);
-  set('wallet-suppliers',  WALLETS.suppliers);
-  set('wallet-cash2',      WALLETS.cash);
-  set('wallet-bank2',      WALLETS.bank);
-  set('wallet-credit2',    WALLETS.credit);
-  set('wallet-suppliers2', WALLETS.suppliers);
-}
-
-function renderTransactionsList() {
-  const el = document.getElementById('tr-list');
-  const sorted = [...TRANSACTIONS].reverse();
-  if (!sorted.length) { el.innerHTML='<div class="empty">لا توجد حركات</div>'; return; }
-  el.innerHTML = sorted.map(tx=>`
-    <div class="card">
-      <div class="row-b">
-        <div>
-          <div style="font-weight:700">${tx.desc}</div>
-          <div style="font-size:11px;color:var(--t2)">${tx.id} · ${tx.date} · ${walletName(tx.wallet)}</div>
+  <!-- تفاصيل فاتورة -->
+  <div id="m-inv" style="display:none">
+    <div class="modal-bg" onclick="closeModal('m-inv',event)">
+      <div class="modal">
+        <div class="modal-hd">
+          <div class="modal-ttl" id="mi-title">تفاصيل الفاتورة</div>
+          <button class="modal-x" onclick="closeModal('m-inv')">✕</button>
         </div>
-        <div style="color:${tx.type==='in'?'var(--gr)':'var(--rd)'}">
-          ${tx.type==='in'?'+':'-'}${fmt(tx.amount)} ج
-        </div>
+        <div id="mi-body"></div>
       </div>
-    </div>`).join('');
-}
+    </div>
+  </div>
 
-function addManualTransaction() {
-  let wallet = document.getElementById('tr-wallet').value;
-  let type   = document.getElementById('tr-type').value;
-  let amount = +document.getElementById('tr-amount').value;
-  let desc   = document.getElementById('tr-desc').value.trim() || 'حركة يدوية';
-  let date   = document.getElementById('tr-date').value || today();
-  if (amount <= 0) { toast('أدخل مبلغ صحيح','er'); return; }
-  if (type==='out' && WALLETS[wallet] < amount) { toast(`رصيد ${walletName(wallet)} غير كافٍ`,'er'); return; }
-  addTransaction(type, wallet, amount, desc, 'manual', date);
-  renderWallets(); renderDash();
-  document.getElementById('tr-amount').value = '';
-  document.getElementById('tr-desc').value   = '';
-  toast('✅ تم تسجيل الحركة');
-}
-
-// ==================== LOCK SCREEN ====================
-let pin = '';
-function getPass() { const d=new Date(); return String(d.getDate()+d.getMonth()+1+5); }
-function kp(c)  { if(pin.length>=4) return; pin+=c; upDots(); if(pin.length===4) setTimeout(kgo,180); }
-function kdel() { pin=pin.slice(0,-1); upDots(); }
-function upDots(){ for(let i=0;i<4;i++) document.getElementById('d'+i).classList.toggle('on',i<pin.length); }
-function kgo() {
-  if (pin===getPass()) {
-    localStorage.setItem(KEYS.activated,'1');
-    document.getElementById('lock').style.display='none';
-    document.getElementById('app').classList.add('on');
-    initApp();
-  } else {
-    document.getElementById('lerr').textContent='❌ رمز خاطئ';
-    document.getElementById('lkbox').classList.add('shake');
-    setTimeout(()=>document.getElementById('lkbox').classList.remove('shake'),400);
-    pin=''; upDots();
-  }
-}
-function lockApp() {
-  if (confirm('تريد قفل التطبيق؟')) {
-    document.getElementById('lock').style.display='flex';
-    document.getElementById('app').classList.remove('on');
-    pin=''; upDots();
-  }
-}
-(function(){ if(localStorage.getItem(KEYS.activated)==='1'){ document.getElementById('lock').style.display='none'; document.getElementById('app').classList.add('on'); initApp(); } })();
-
-// ==================== INIT ====================
-function initApp() {
-  const now    = new Date();
-  const months = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
-  const days   = ['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
-  document.getElementById('pgDate').textContent = `${days[now.getDay()]} ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
-  document.getElementById('rep-from').value = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-01`;
-  document.getElementById('rep-to').value   = today();
-  document.getElementById('tr-date').value  = today();
-  document.getElementById('mi-stock').addEventListener('input', function(){
-    document.getElementById('mi-payment-wrap').style.display = +this.value > 0 ? 'block' : 'none';
-  });
-  renderDash(); renderItemSelect(); renderItems(); renderMoves();
-  renderInvList(); renderInvDatalist(); renderCusts(); renderCustDatalist();
-  renderReports(); renderWallets(); renderPurchasesList();
-  renderRetItemSelect(); renderRetList();
-}
-
-// ==================== UI HELPERS ====================
-function goPage(btn, title) {
-  document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));
-  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('on'));
-  document.getElementById('pg-'+btn.dataset.pg).classList.add('on');
-  btn.classList.add('on');
-  document.getElementById('pgTitle').textContent = title;
-  document.getElementById('scroller').scrollTop  = 0;
-  if (btn.dataset.pg==='rep')   renderReports();
-  if (btn.dataset.pg==='treas') renderWallets();
-}
-function sTab(btn,id){ tabSwitch('.pg.on .tab','.pg.on #stab-new,.pg.on #stab-list',btn,id); }
-function iTab(btn,id){ tabSwitch('#pg-inv .tab','#itab-items,#itab-purchases,#itab-moves',btn,id); if(id==='itab-purchases') renderPurchasesList(); }
-function cTab(btn,id){ tabSwitch('#pg-cust .tab','#ctab-list,#ctab-add',btn,id); }
-function tTab(btn,id){ tabSwitch('#pg-treas .tab','#ttab-summary,#ttab-add,#ttab-history',btn,id); if(id==='ttab-history') renderTransactionsList(); }
-function rTab(btn,id){ tabSwitch('#pg-ret .tab','#rtab-list,#rtab-add',btn,id); }
-function tabSwitch(tabSel, paneSel, activeBtn, activeId) {
-  document.querySelectorAll(tabSel).forEach(t=>t.classList.remove('on'));
-  document.querySelectorAll(paneSel).forEach(p=>p.style.display='none');
-  activeBtn.classList.add('on');
-  document.getElementById(activeId).style.display='block';
-}
-function openModal(id) {
-  if (id==='m-purchase') renderPurchaseLines();
-  document.getElementById(id).style.display='flex';
-  document.body.style.overflow='hidden';
-}
-
-// ✅ FIX 1: استخدام classList.contains بدل مقارنة className كـ string
-function closeModal(id, e) {
-  if (e && !e.target.classList.contains('modal-bg')) return;
-  document.getElementById(id).style.display='none';
-  document.body.style.overflow='';
-}
-
-function confirm2(msg) {
-  return new Promise(res => {
-    const bg=document.createElement('div');
-    bg.className='confirm-bg';
-    bg.innerHTML=`<div class="confirm-box"><div class="confirm-msg">${msg}</div><div class="confirm-btns"><button class="btn btn-d" id="cn">إلغاء</button><button class="btn btn-p" id="cy">تأكيد</button></div></div>`;
-    document.body.appendChild(bg);
-    bg.querySelector('#cy').onclick=()=>{bg.remove();res(true);};
-    bg.querySelector('#cn').onclick=()=>{bg.remove();res(false);};
-  });
-}
-function toast(msg, type) {
-  const old=document.querySelector('.toast'); if(old) old.remove();
-  const el=document.createElement('div');
-  el.className=`toast ${type==='er'?'er':'ok'}`;
-  el.textContent=msg;
-  document.body.appendChild(el);
-  setTimeout(()=>el.remove(),2700);
-}
-
-// ==================== WEIGHTED AVERAGE COST ====================
-function updateAvgCost(item, newQty, newCost) {
-  let oldQty = item.stock || 0;
-  let oldAvg = item.avg_cost || 0;
-  let totalQ = oldQty + newQty;
-  item.avg_cost = totalQ<=0 ? 0 : r2(((oldQty*oldAvg)+(newQty*newCost))/totalQ);
-  item.stock    = totalQ;
-}
-
-// ==================== ITEMS ====================
-function renderItemSelect() {
-  let sel=document.getElementById('si-item');
-  sel.innerHTML='<option value="">— اختر صنف —</option>'+
-    ITEMS.map(i=>`<option value="${i.id}">${i.name} — ${fmt(i.price)} ج (${i.stock})</option>`).join('');
-}
-
-function renderItems() {
-  let q    = (document.getElementById('item-search')?.value||'').toLowerCase();
-  let list = ITEMS.filter(i=>!q||i.name.includes(q)||i.id.includes(q));
-  let el   = document.getElementById('items-list');
-  if (!list.length){ el.innerHTML='<div class="empty">لا توجد أصناف</div>'; return; }
-  el.innerHTML = list.map(it=>{
-    let isLow   = it.stock <= it.reorder;
-    let profitM = it.avg_cost>0 ? r2(((it.price-it.avg_cost)/it.price)*100) : 0;
-    return `
-    <div class="item-card">
-      <div class="row-b" style="margin-bottom:4px">
-        <div>
-          <div class="item-name">${it.name}</div>
-          <div class="item-id">${it.id}</div>
+  <!-- بيانات العميل -->
+  <div id="m-cust" style="display:none">
+    <div class="modal-bg" onclick="closeModal('m-cust',event)">
+      <div class="modal">
+        <div class="modal-hd">
+          <div class="modal-ttl" id="mc-title">بيانات العميل</div>
+          <button class="modal-x" onclick="closeModal('m-cust')">✕</button>
         </div>
-        <span class="bdg ${isLow?'br':'bg'}">${isLow?'⚠️ ناقص':'✅ متوفر'}</span>
+        <div id="mc-body"></div>
       </div>
-      <div class="item-stats">
-        <div class="item-stat">
-          <div class="sv" style="color:var(--t2)">${fmt(it.avg_cost)}</div>
-          <div class="sl">متوسط التكلفة</div>
-        </div>
-        <div class="item-stat">
-          <div class="sv" style="color:var(--ac)">${fmt(it.price)}</div>
-          <div class="sl">سعر البيع</div>
-        </div>
-        <div class="item-stat">
-          <div class="sv" style="color:${isLow?'var(--rd)':'var(--gr)'}">${it.stock}</div>
-          <div class="sl">المخزون</div>
-        </div>
-      </div>
-      <div style="font-size:11px;color:var(--t2);margin-bottom:10px">هامش الربح: ${profitM}% · حد الطلب: ${it.reorder}</div>
-      <div class="item-actions">
-        <button class="btn btn-s" onclick="openStockMoveModal('${it.id}','in')">📥 وارد</button>
-        <button class="btn btn-d" onclick="openStockMoveModal('${it.id}','out')">📤 صادر</button>
-      </div>
-      <button class="btn btn-d" style="margin-top:8px;width:100%;font-size:12px;padding:8px" onclick="deleteItem('${it.id}')">🗑 حذف الصنف</button>
-    </div>`;
-  }).join('');
-}
+    </div>
+  </div>
 
-function addItem() {
-  let name    = document.getElementById('mi-name').value.trim();
-  let cost    = +document.getElementById('mi-cost').value  || 0;
-  let price   = +document.getElementById('mi-price').value || 0;
-  let stock   = +document.getElementById('mi-stock').value || 0;
-  let reorder = +document.getElementById('mi-reorder').value || 5;
-  let payment = document.getElementById('mi-payment').value;
-  if (!name || price<=0){ toast('اسم الصنف وسعر البيع مطلوب','er'); return; }
-  let id      = 'ITM-'+pad(CTR.item++,3);
-  let newItem = { id, name, avg_cost:cost, price, stock:0, reorder };
-  ITEMS.push(newItem);
-  if (stock > 0) {
-    updateAvgCost(newItem, stock, cost);
-    let totalCost = r2(stock * cost);
-    if (totalCost > 0) {
-      if (payment==='suppliers') addTransaction('in',  'suppliers', totalCost, `مخزون ابتدائي ${name}`, id, today());
-      else                       addTransaction('out', payment,     totalCost, `مخزون ابتدائي ${name}`, id, today());
-    }
-  }
-  save(KEYS.items, ITEMS); save(KEYS.counters, CTR);
-  closeModal('m-additem');
-  document.getElementById('mi-name').value    = '';
-  document.getElementById('mi-cost').value    = '';
-  document.getElementById('mi-price').value   = '';
-  document.getElementById('mi-stock').value   = '0';
-  document.getElementById('mi-reorder').value = '5';
-  document.getElementById('mi-payment-wrap').style.display = 'none';
-  renderItems(); renderItemSelect(); renderDash(); renderWallets();
-  toast('✅ تمت إضافة الصنف');
-}
+  <!-- ===================================================
+       JavaScript — الترتيب مهم جداً ⚠️
+       1. storage.js  → أول حاجة (فيه KEYS والـ State)
+       2. utils.js    → تاني (بيستخدم save/load)
+       3. license.js  → تالت (بيعمل شاشة الترخيص)
+       4. باقي الملفات بالترتيب
+       5. init.js     → آخر حاجة (بيستدعي كل الدوال التانية)
+  ==================================================== -->
+  <script src="js/storage.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/license.js"></script>
+  <script src="js/dashboard.js"></script>
+  <script src="js/inventory.js"></script>
+  <script src="js/purchases.js"></script>
+  <script src="js/sales.js"></script>
+  <script src="js/customers.js"></script>
+  <script src="js/treasury.js"></script>
+  <script src="js/returns.js"></script>
+  <script src="js/reports.js"></script>
+  <script src="js/backup.js"></script>
+  <script src="js/barcode.js"></script>
+  <script src="js/init.js"></script>
 
-async function deleteItem(id) {
-  let it = ITEMS.find(i=>i.id===id);
-  if (!it) return;
-  // التحقق: هل الصنف مستخدم في فواتير بيع؟
-  let usedInInvoices = INVOICES.some(inv=>inv.lines.some(l=>l.id===id));
-  if (usedInInvoices) {
-    toast(`❌ لا يمكن حذف "${it.name}" لأنه مستخدم في فواتير بيع`,'er');
-    return;
-  }
-  // التحقق: هل الصنف مستخدم في فواتير شراء؟
-  let usedInPurchases = PURCHASES.some(p=>p.lines.some(l=>l.id===id));
-  if (usedInPurchases) {
-    toast(`❌ لا يمكن حذف "${it.name}" لأنه مستخدم في فواتير شراء`,'er');
-    return;
-  }
-  if (!await confirm2(`حذف الصنف "${it.name}" نهائياً؟`)) return;
-  ITEMS = ITEMS.filter(i=>i.id!==id);
-  // حذف حركاته من سجل الحركات
-  MOVES = MOVES.filter(m=>m.itemId!==id);
-  save(KEYS.items, ITEMS);
-  save(KEYS.moves, MOVES);
-  renderItems(); renderItemSelect(); renderDash(); renderMoves();
-  toast(`✅ تم حذف الصنف "${it.name}"`);
-}
-
-// ==================== STOCK MOVE MODAL ====================
-let _smItemId=null, _smType=null, _smPayment='cash';
-
-function openStockMoveModal(itemId, type) {
-  _smItemId  = itemId;
-  _smType    = type;
-  _smPayment = 'cash';
-  let it = ITEMS.find(i=>i.id===itemId);
-  document.getElementById('sm-title').textContent = type==='in' ? '📥 إضافة وارد' : '📤 صرف من المخزون';
-  document.getElementById('sm-item-info').innerHTML =
-    `<b>${it.name}</b> — المخزون الحالي: <b style="color:var(--ac)">${it.stock}</b> وحدة`+
-    (type==='out'?` · الحد الأقصى: <b style="color:var(--or)">${it.stock}</b>`:'');
-  document.getElementById('sm-qty').value = '1';
-  document.getElementById('sm-qty').max   = type==='out' ? it.stock : '';
-  document.getElementById('sm-note').value = '';
-  document.getElementById('sm-in-fields').style.display = type==='in' ? 'block' : 'none';
-  if (type==='in') { document.getElementById('sm-cost').value=''; selectSMPayment('cash'); }
-  openModal('m-stockmove');
-}
-
-function selectSMPayment(val) {
-  _smPayment = val;
-  ['cash','bank','suppliers','credit'].forEach(k=>{
-    let btn=document.getElementById('smb-'+k);
-    btn.className='payment-btn';
-    if (k===val){
-      if (k==='bank')                          btn.classList.add('on-bank');
-      else if (k==='suppliers'||k==='credit')  btn.classList.add('on-sup');
-      else                                     btn.classList.add('on');
-    }
-  });
-}
-
-async function confirmStockMove() {
-  let it   = ITEMS.find(i=>i.id===_smItemId);
-  let qty  = parseInt(document.getElementById('sm-qty').value)||0;
-  let note = document.getElementById('sm-note').value.trim()||'حركة يدوية';
-  if (!it||qty<=0){ toast('أدخل كمية صحيحة','er'); return; }
-
-  if (_smType==='out') {
-    if (qty>it.stock){ toast(`الكمية أكبر من المخزون (${it.stock})`,'er'); return; }
-    it.stock -= qty;
-    MOVES.push({id:'MV-'+pad(CTR.move++,3),itemId:it.id,itemName:it.name,type:'out',qty,cost:0,note,date:today()});
-    save(KEYS.items,ITEMS); save(KEYS.moves,MOVES); save(KEYS.counters,CTR);
-    closeModal('m-stockmove');
-    renderItems(); renderItemSelect(); renderDash(); renderMoves();
-    toast(`✅ تم صرف ${qty} من ${it.name}`);
-    return;
-  }
-
-  // وارد
-  let cost   = parseFloat(document.getElementById('sm-cost').value)||0;
-  if (cost<=0){ toast('أدخل سعر التكلفة','er'); return; }
-  let amount = r2(qty*cost);
-
-  if (_smPayment!=='suppliers' && _smPayment!=='credit') {
-    if (WALLETS[_smPayment]<amount){
-      toast(`رصيد ${walletName(_smPayment)} غير كافٍ (${fmt(WALLETS[_smPayment])} ج)`,'er');
-      return;
-    }
-  }
-
-  updateAvgCost(it, qty, cost);
-
-  if (_smPayment==='suppliers')     addTransaction('in',  'suppliers', amount, `شراء وارد: ${it.name}`,     'stock', today());
-  else if (_smPayment==='credit')   addTransaction('in',  'credit',    amount, `شراء وارد آجل: ${it.name}`, 'stock', today());
-  else                              addTransaction('out', _smPayment,  amount, `شراء وارد: ${it.name}`,     'stock', today());
-
-  MOVES.push({id:'MV-'+pad(CTR.move++,3),itemId:it.id,itemName:it.name,type:'in',qty,cost,note,date:today()});
-  save(KEYS.items,ITEMS); save(KEYS.moves,MOVES); save(KEYS.counters,CTR);
-  closeModal('m-stockmove');
-  renderItems(); renderItemSelect(); renderDash(); renderMoves(); renderWallets();
-  toast(`✅ تم إضافة ${qty} من ${it.name} — تكلفة: ${fmt(amount)} ج`);
-}
-
-function renderMoves() {
-  let el     = document.getElementById('moves-list');
-  let sorted = [...MOVES].reverse();
-  if (!sorted.length){ el.innerHTML='<div class="empty">لا توجد حركات</div>'; return; }
-  el.innerHTML = sorted.map(m=>`
-    <div class="card">
-      <div class="row-b">
-        <div>
-          <div style="font-weight:700">${m.itemName}</div>
-          <div style="font-size:11px;color:var(--t2)">${m.date} · ${m.type==='in'?'📥 وارد':'📤 صادر'}${m.note?' · '+m.note:''}</div>
-        </div>
-        <div style="color:${m.type==='in'?'var(--gr)':'var(--rd)'}">
-          ${m.type==='in'?'+':'-'}${m.qty} قطعة
-        </div>
-      </div>
-    </div>`).join('');
-}
-
-// ==================== PURCHASES ====================
-function addPurchaseLine() {
-  let div=document.createElement('div');
-  div.className='pline';
-  div.innerHTML=`
-    <button class="del-pline" onclick="this.parentElement.remove();calcPurchaseTotal()">🗑</button>
-    <select onchange="calcPurchaseTotal()">
-      <option value="">— اختر صنف —</option>
-      ${ITEMS.map(i=>`<option value="${i.id}">${i.name}</option>`).join('')}
-    </select>
-    <div class="pline-row">
-      <input type="number" placeholder="الكمية" min="1" value="1" oninput="calcPurchaseTotal()">
-      <input type="number" placeholder="سعر التكلفة" min="0" step="0.01" oninput="calcPurchaseTotal()">
-    </div>`;
-  document.getElementById('purchase-lines').appendChild(div);
-}
-function calcPurchaseTotal() {
-  let total=0;
-  document.querySelectorAll('#purchase-lines .pline').forEach(div=>{
-    let qty  = parseFloat(div.querySelectorAll('input')[0]?.value)||0;
-    let cost = parseFloat(div.querySelectorAll('input')[1]?.value)||0;
-    total += qty*cost;
-  });
-  let el=document.getElementById('p-total');
-  if (el) el.textContent=fmt(total)+' ج';
-}
-function renderPurchaseLines() {
-  document.getElementById('purchase-lines').innerHTML='';
-  addPurchaseLine();
-  document.getElementById('p-total').textContent='0 ج';
-}
-async function savePurchase() {
-  let supplier = document.getElementById('p-supplier').value.trim()||'مورد عام';
-  let payment  = document.getElementById('p-payment').value;
-  let lines=[], totalCost=0;
-  document.querySelectorAll('#purchase-lines .pline').forEach(div=>{
-    let sel  = div.querySelector('select');
-    let qty  = parseInt(div.querySelectorAll('input')[0]?.value)||0;
-    let cost = parseFloat(div.querySelectorAll('input')[1]?.value)||0;
-    if (sel.value&&qty>0&&cost>0){
-      let it=ITEMS.find(i=>i.id===sel.value);
-      if (it){ lines.push({id:it.id,name:it.name,qty,cost}); totalCost+=qty*cost; }
-    }
-  });
-  if (!lines.length){ toast('أضف أصناف صحيحة','er'); return; }
-  totalCost=r2(totalCost);
-  if (payment!=='suppliers'&&WALLETS[payment]<totalCost){
-    toast(`رصيد ${walletName(payment)} غير كافٍ (${fmt(WALLETS[payment])} ج)`,'er'); return;
-  }
-  for (let l of lines){ let it=ITEMS.find(i=>i.id===l.id); updateAvgCost(it,l.qty,l.cost); }
-  let purchId='PUR-'+pad(CTR.purch++,4);
-  PURCHASES.push({id:purchId,date:today(),supplier,lines,total:totalCost,payment});
-  save(KEYS.purchases,PURCHASES); save(KEYS.items,ITEMS); save(KEYS.counters,CTR);
-  if (payment==='suppliers') addTransaction('in',  'suppliers', totalCost, `شراء آجل ${purchId}`, purchId, today());
-  else                       addTransaction('out', payment,     totalCost, `شراء ${purchId}`,      purchId, today());
-  closeModal('m-purchase');
-  renderItems(); renderItemSelect(); renderDash(); renderPurchasesList(); renderWallets();
-  toast(`✅ فاتورة شراء ${purchId} — ${fmt(totalCost)} ج`);
-}
-
-// ✅ FIX 2: التحقق من المخزون الحالي فقط (أدق وأبسط من فحص تواريخ المبيعات)
-async function deletePurchase(id) {
-  let purch = PURCHASES.find(p=>p.id===id);
-  if (!purch) return;
-
-  // التحقق: هل المخزون الحالي يكفي لرد كميات الفاتورة؟
-  for (let line of purch.lines) {
-    let it = ITEMS.find(i=>i.id===line.id);
-    if (it && it.stock < line.qty) {
-      toast(`❌ لا يمكن الحذف: المخزون الحالي لـ "${it.name}" (${it.stock}) أقل من كمية الفاتورة (${line.qty})`,'er');
-      return;
-    }
-  }
-
-  if (!await confirm2('حذف فاتورة الشراء؟ سيتم رد المخزون وتعديل الأرصدة')) return;
-
-  for (let l of purch.lines) {
-    let it=ITEMS.find(i=>i.id===l.id);
-    if (it) {
-      let newQty=it.stock-l.qty;
-      if (newQty<=0){ it.stock=0; it.avg_cost=0; }
-      else {
-        let tCost=(it.stock*it.avg_cost)-(l.qty*l.cost);
-        it.stock    = newQty;
-        it.avg_cost = r2(tCost/newQty);
-      }
-    }
-  }
-
-  if (purch.payment==='suppliers') addTransaction('out', 'suppliers',    purch.total, `حذف شراء ${id}`, id, today());
-  else                             addTransaction('in',  purch.payment,  purch.total, `حذف شراء ${id}`, id, today());
-
-  PURCHASES=PURCHASES.filter(p=>p.id!==id);
-  save(KEYS.purchases,PURCHASES); save(KEYS.items,ITEMS);
-  renderItems(); renderItemSelect(); renderDash(); renderPurchasesList(); renderWallets();
-  toast('✅ تم حذف فاتورة الشراء بنجاح');
-}
-
-function renderPurchasesList() {
-  let el=document.getElementById('purchases-list');
-  if (!el) return;
-  let sorted=[...PURCHASES].reverse();
-  if (!sorted.length){ el.innerHTML='<div class="empty">لا توجد فواتير شراء</div>'; return; }
-  el.innerHTML=sorted.map(p=>`
-    <div class="card">
-      <div class="row-b" style="align-items:flex-start">
-        <div style="flex:1">
-          <div style="font-weight:800">${p.id}</div>
-          <div style="font-size:11px;color:var(--t2)">${p.date} · ${p.supplier}</div>
-          <div style="font-size:12px;margin-top:4px">${p.lines.map(l=>l.name+' ('+l.qty+')').join('، ')}</div>
-        </div>
-        <div style="text-align:left;margin-right:8px">
-          <div style="font-weight:800">${fmt(p.total)} ج</div>
-          <div style="font-size:11px;color:var(--t2)">${p.payment==='cash'?'نقدي':p.payment==='bank'?'بنك':'آجل موردين'}</div>
-          <button class="btn btn-d" style="margin-top:6px;padding:5px 10px;font-size:12px" onclick="deletePurchase('${p.id}')">حذف</button>
-        </div>
-      </div>
-    </div>`).join('');
-}
-
-// ==================== SALES INVOICE ====================
-let curLines=[];
-function addLine() {
-  let id=document.getElementById('si-item').value; if(!id) return;
-  let it=ITEMS.find(x=>x.id===id); if(!it) return;
-  let ex=curLines.find(x=>x.id===id);
-  if(ex) ex.qty++; else curLines.push({id:it.id,name:it.name,qty:1,price:it.price,cost:it.avg_cost});
-  document.getElementById('si-item').value='';
-  renderCurLines();
-}
-function chgQ(i,d){ curLines[i].qty=Math.max(1,curLines[i].qty+d); renderCurLines(); }
-function delL(i)  { curLines.splice(i,1); renderCurLines(); }
-function renderCurLines() {
-  let el=document.getElementById('inv-lines');
-  let tb=document.getElementById('inv-tbox');
-  let sb=document.getElementById('sv-inv');
-  if (!curLines.length){ el.innerHTML=''; tb.style.display='none'; sb.style.display='none'; return; }
-  el.innerHTML=curLines.map((l,i)=>`
-    <div class="iline">
-      <button class="del-btn" onclick="delL(${i})">🗑</button>
-      <div class="row-b">
-        <div style="font-weight:700;padding-left:26px">${l.name}</div>
-        <div style="color:var(--ac)">${fmt(l.qty*l.price)} ج</div>
-      </div>
-      <div class="qrow">
-        <button class="qb" onclick="chgQ(${i},-1)">−</button>
-        <span class="qv">${l.qty}</span>
-        <button class="qb" onclick="chgQ(${i},1)">+</button>
-        <span style="color:var(--t2);font-size:13px">× ${fmt(l.price)} ج</span>
-      </div>
-    </div>`).join('');
-  tb.style.display='block'; sb.style.display='flex'; calcInv();
-}
-function calcInv() {
-  let sub  = r2(curLines.reduce((a,l)=>a+l.qty*l.price,0));
-  let disc = +document.getElementById('it-disc').value||0;
-  let tax  = r2((sub-disc)*0.14);
-  let ttl  = r2(sub-disc+tax);
-  document.getElementById('it-sub').textContent=fmt(sub)+' ج';
-  document.getElementById('it-tax').textContent=fmt(tax)+' ج';
-  document.getElementById('it-ttl').textContent=fmt(ttl)+' ج';
-}
-async function saveInv() {
-  if (!curLines.length) return;
-  for (let l of curLines){
-    let it=ITEMS.find(x=>x.id===l.id);
-    if(l.qty>it.stock){ toast(`⚠️ ${l.name}: متاح ${it.stock} فقط`,'er'); return; }
-  }
-  let sub    = r2(curLines.reduce((a,l)=>a+l.qty*l.price,0));
-  let cst    = r2(curLines.reduce((a,l)=>a+l.qty*l.cost,0));
-  let disc   = +document.getElementById('it-disc').value||0;
-  let tax    = r2((sub-disc)*0.14);
-  let total  = r2(sub-disc+tax);
-  let profit = r2(sub-disc-cst);
-  let cust   = document.getElementById('si-cust').value.trim()||'عميل عام';
-  let payment= document.getElementById('si-payment').value;
-  let td     = today();
-  curLines.forEach(l=>{ let it=ITEMS.find(x=>x.id===l.id); it.stock-=l.qty; });
-  let invId  = 'INV-'+pad(CTR.inv++,4);
-  INVOICES.push({id:invId,date:td,customer:cust,lines:[...curLines],discount:disc,tax,total,profit,payment});
-  if(payment==='cash')   addTransaction('in','cash',   total,`مبيعات ${invId}`,    invId,td);
-  if(payment==='bank')   addTransaction('in','bank',   total,`مبيعات ${invId}`,    invId,td);
-  if(payment==='credit') addTransaction('in','credit', total,`مبيعات آجل ${invId}`,invId,td);
-  save(KEYS.invoices,INVOICES); save(KEYS.items,ITEMS); save(KEYS.counters,CTR);
-  curLines=[];
-  document.getElementById('si-cust').value ='';
-  document.getElementById('it-disc').value ='0';
-  document.getElementById('si-item').value ='';
-  renderCurLines(); renderInvList(); renderInvDatalist(); renderItems(); renderItemSelect(); renderDash(); renderWallets();
-  toast(`✅ ${invId} — ${fmt(total)} ج (${payment==='cash'?'نقدي':payment==='bank'?'بنك':'آجل'})`);
-}
-function renderInvList() {
-  let q    = (document.getElementById('inv-search')?.value||'').toLowerCase();
-  let list = [...INVOICES].reverse().filter(i=>!q||i.id.toLowerCase().includes(q)||i.customer.toLowerCase().includes(q));
-  let el   = document.getElementById('inv-list');
-  if (!list.length){ el.innerHTML='<div class="empty">لا توجد فواتير</div>'; return; }
-  el.innerHTML=list.map(inv=>`
-    <div class="inv-card" onclick="showInv('${inv.id}')">
-      <div class="row-b">
-        <div>
-          <div style="font-weight:800">${inv.id}</div>
-          <div style="font-size:13px">${inv.customer} · ${inv.date}</div>
-          <div style="font-size:11px;color:var(--t2)">${inv.payment==='cash'?'💵 نقدي':inv.payment==='bank'?'🏦 بنك':'📝 آجل'}</div>
-        </div>
-        <div style="text-align:left">
-          <div style="font-weight:900;color:var(--ac)">${fmt(inv.total)} ج</div>
-          <div style="font-size:11px;color:var(--gr)">ربح: ${fmt(inv.profit)} ج</div>
-        </div>
-      </div>
-    </div>`).join('');
-}
-async function deleteInv(id) {
-  if (!await confirm2('حذف الفاتورة؟ سيتم إعادة المخزون واسترداد المبلغ')) return;
-  let inv=INVOICES.find(x=>x.id===id); if(!inv) return;
-  for (let l of inv.lines){ let it=ITEMS.find(i=>i.id===l.id); if(it) it.stock+=l.qty; }
-  if(inv.payment==='cash')   addTransaction('out','cash',  inv.total,`حذف فاتورة ${id}`,     id,today());
-  if(inv.payment==='bank')   addTransaction('out','bank',  inv.total,`حذف فاتورة ${id}`,     id,today());
-  if(inv.payment==='credit') addTransaction('out','credit',inv.total,`حذف فاتورة آجلة ${id}`,id,today());
-  INVOICES=INVOICES.filter(x=>x.id!==id);
-  save(KEYS.invoices,INVOICES); save(KEYS.items,ITEMS);
-  closeModal('m-inv');
-  renderInvList(); renderDash(); renderItems(); renderItemSelect(); renderWallets();
-  toast('✅ تم الحذف واستعادة المخزون');
-}
-function showInv(id) {
-  let inv=INVOICES.find(x=>x.id===id); if(!inv) return;
-  document.getElementById('mi-title').textContent=inv.id;
-  document.getElementById('mi-body').innerHTML=`
-    <div class="irow"><span>العميل</span><span>${inv.customer}</span></div>
-    <div class="irow"><span>التاريخ</span><span>${inv.date}</span></div>
-    <div class="irow"><span>طريقة الدفع</span><span>${inv.payment==='cash'?'💵 نقدي':inv.payment==='bank'?'🏦 بنك':'📝 آجل'}</span></div>
-    <hr class="divider">
-    ${inv.lines.map(l=>`<div class="irow"><span>${l.name} ×${l.qty}</span><span>${fmt(l.qty*l.price)} ج</span></div>`).join('')}
-    <hr class="divider">
-    <div class="irow"><span>خصم</span><span>${fmt(inv.discount)} ج</span></div>
-    <div class="irow"><span>ضريبة 14%</span><span>${fmt(inv.tax)} ج</span></div>
-    <div class="irow big"><span>الإجمالي</span><span>${fmt(inv.total)} ج</span></div>
-    <div class="irow" style="color:var(--gr)"><span>صافي الربح</span><span>${fmt(inv.profit)} ج</span></div>
-    <button class="btn btn-d" style="margin-top:16px" onclick="deleteInv('${inv.id}')">🗑 حذف الفاتورة</button>`;
-  openModal('m-inv');
-}
-function renderInvDatalist() {
-  let dl=document.getElementById('invlist');
-  if(dl) dl.innerHTML=INVOICES.map(i=>`<option value="${i.id}">`).join('');
-}
-
-// ==================== CUSTOMERS ====================
-function addCust() {
-  let name=document.getElementById('nc-name').value.trim();
-  if(!name){ toast('أدخل الاسم','er'); return; }
-  CUSTOMERS.push({id:'CST-'+pad(CTR.cust++,3),name,phone:document.getElementById('nc-phone').value,addr:document.getElementById('nc-addr').value});
-  save(KEYS.customers,CUSTOMERS); save(KEYS.counters,CTR);
-  document.getElementById('nc-name').value ='';
-  document.getElementById('nc-phone').value='';
-  document.getElementById('nc-addr').value ='';
-  renderCusts(); renderCustDatalist();
-  toast('✅ تمت الإضافة');
-}
-function renderCusts() {
-  let q    = (document.getElementById('cust-search')?.value||'').toLowerCase();
-  let list = CUSTOMERS.filter(c=>c.name.toLowerCase().includes(q)||(c.phone||'').includes(q));
-  let el   = document.getElementById('cust-list');
-  if(!list.length){ el.innerHTML='<div class="empty">لا توجد عملاء</div>'; return; }
-  el.innerHTML=list.map(c=>`
-    <div class="card" onclick="showCust('${c.id}')" style="cursor:pointer">
-      <div class="row-b">
-        <div>
-          <div style="font-weight:700">${c.name}</div>
-          <div style="font-size:12px;color:var(--t2)">${c.phone||'—'}</div>
-        </div>
-        <span style="font-size:18px">›</span>
-      </div>
-    </div>`).join('');
-}
-function showCust(id) {
-  let c    = CUSTOMERS.find(x=>x.id===id);
-  let invs = INVOICES.filter(i=>i.customer===c.name);
-  let total= invs.reduce((a,i)=>a+i.total,0);
-  document.getElementById('mc-title').textContent=c.name;
-  document.getElementById('mc-body').innerHTML=`
-    <div class="irow"><span>الهاتف</span><span>${c.phone||'—'}</span></div>
-    <div class="irow"><span>العنوان</span><span>${c.addr||'—'}</span></div>
-    <hr class="divider">
-    <div class="irow"><span>إجمالي المشتريات</span><span style="color:var(--ac)">${fmt(total)} ج</span></div>
-    <div class="irow"><span>عدد الفواتير</span><span>${invs.length}</span></div>
-    <button class="btn btn-d" style="margin-top:16px" onclick="deleteCust('${c.id}')">🗑 حذف العميل</button>`;
-  openModal('m-cust');
-}
-async function deleteCust(id) {
-  if (await confirm2('حذف العميل؟')){
-    CUSTOMERS=CUSTOMERS.filter(x=>x.id!==id);
-    save(KEYS.customers,CUSTOMERS);
-    closeModal('m-cust');
-    renderCusts(); renderCustDatalist();
-    toast('✅ تم الحذف');
-  }
-}
-function renderCustDatalist() {
-  let dl=document.getElementById('clist');
-  if(dl) dl.innerHTML=CUSTOMERS.map(c=>`<option value="${c.name}">`).join('');
-}
-
-// ==================== RETURNS ====================
-function renderRetItemSelect() {
-  let sel=document.getElementById('ret-item');
-  if(sel) sel.innerHTML='<option value="">— اختر —</option>'+ITEMS.map(i=>`<option value="${i.id}">${i.name}</option>`).join('');
-}
-async function addReturn() {
-  let invId   = document.getElementById('ret-inv').value.trim();
-  let itemId  = document.getElementById('ret-item').value;
-  let qty     = +document.getElementById('ret-qty').value||1;
-  let reason  = document.getElementById('ret-reason').value.trim()||'—';
-  let payment = document.getElementById('ret-payment').value;
-  if(!invId||!itemId){ toast('أدخل الفاتورة والصنف','er'); return; }
-  let it  = ITEMS.find(x=>x.id===itemId); if(!it) return;
-  let inv = INVOICES.find(x=>x.id===invId);
-  if(!inv){ toast('الفاتورة غير موجودة','er'); return; }
-  let line=inv.lines.find(l=>l.id===itemId);
-  if(!line||qty>line.qty){ toast('الكمية المرتجعة أكبر من المباعة','er'); return; }
-  let value=r2(qty*it.price);
-  it.stock+=qty;
-  if(payment==='cash')   addTransaction('out','cash',  value,`مرتجع فاتورة ${invId}`,          invId,today());
-  if(payment==='bank')   addTransaction('out','bank',  value,`مرتجع فاتورة ${invId}`,          invId,today());
-  if(payment==='credit') addTransaction('out','credit',value,`مرتجع فاتورة ${invId} (خصم دين)`,invId,today());
-  RETURNS.push({id:'RET-'+pad(CTR.ret++,3),invId,itemId,itemName:it.name,qty,reason,value,date:today(),paymentMethod:payment});
-  save(KEYS.returns,RETURNS); save(KEYS.items,ITEMS); save(KEYS.counters,CTR);
-  document.getElementById('ret-inv').value   ='';
-  document.getElementById('ret-qty').value   ='1';
-  document.getElementById('ret-reason').value='';
-  renderRetList(); renderItems(); renderDash(); renderWallets();
-  toast('✅ تم تسجيل المرتجع');
-}
-function renderRetList() {
-  let el     = document.getElementById('ret-list');
-  let sorted = [...RETURNS].reverse();
-  if(!sorted.length){ el.innerHTML='<div class="empty">لا توجد مرتجعات</div>'; return; }
-  el.innerHTML=sorted.map(r=>`
-    <div class="card">
-      <div class="row-b">
-        <div>
-          <div style="font-weight:700">${r.itemName} (×${r.qty})</div>
-          <div style="font-size:11px;color:var(--t2)">فاتورة: ${r.invId} · ${r.date}</div>
-          <div style="font-size:12px">السبب: ${r.reason}</div>
-          <div style="font-size:12px">رد: ${r.paymentMethod==='cash'?'💵 نقدي':r.paymentMethod==='bank'?'🏦 بنك':'📝 آجل'}</div>
-        </div>
-        <div style="color:var(--rd);font-weight:800">${fmt(r.value)} ج</div>
-      </div>
-    </div>`).join('');
-}
-
-// ==================== REPORTS ====================
-function renderReports() {
-  let from = document.getElementById('rep-from').value;
-  let to   = document.getElementById('rep-to').value;
-  let invs = INVOICES.filter(i=>(!from||i.date>=from)&&(!to||i.date<=to));
-  let totalSales  = r2(invs.reduce((a,i)=>a+i.total,0));
-  let totalProfit = r2(invs.reduce((a,i)=>a+i.profit,0));
-  let totalDisc   = r2(invs.reduce((a,i)=>a+i.discount,0));
-  let totalTax    = r2(invs.reduce((a,i)=>a+i.tax,0));
-  let margin = totalSales>0 ? ((totalProfit/totalSales)*100).toFixed(1) : 0;
-  document.getElementById('report-income').innerHTML=`
-    <div class="irow"><span>إجمالي المبيعات</span><span>${fmt(totalSales)} ج</span></div>
-    <div class="irow"><span>الخصومات</span><span>${fmt(totalDisc)} ج</span></div>
-    <div class="irow"><span>الضريبة المحصلة</span><span>${fmt(totalTax)} ج</span></div>
-    <div class="irow"><span style="color:var(--gr)">صافي الربح</span><span style="color:var(--gr)">${fmt(totalProfit)} ج</span></div>
-    <div class="irow"><span>هامش الربح</span><span>${margin}%</span></div>`;
-  let monthly=Array(12).fill(0);
-  invs.forEach(inv=>{ let m=+inv.date.slice(5,7)-1; monthly[m]+=inv.total; });
-  let maxM=Math.max(...monthly,1);
-  let months=['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
-  document.getElementById('r-monthly').innerHTML=monthly
-    .map((v,i)=>v>0?`<div class="brow"><div class="blbl">${months[i]}</div><div class="bwrap"><div class="bfill" style="width:${v/maxM*100}%">${fmt(v)}</div></div></div>`:'')
-    .join('')||'<div class="empty" style="padding:16px">لا توجد بيانات</div>';
-  let rets  =RETURNS.filter(r=>(!from||r.date>=from)&&(!to||r.date<=to));
-  let retVal=r2(rets.reduce((a,r)=>a+r.value,0));
-  document.getElementById('r-ret').innerHTML=`
-    <div class="irow"><span>إجمالي المرتجعات</span><span style="color:var(--rd)">${fmt(retVal)} ج</span></div>
-    <div class="irow"><span>عدد المرتجعات</span><span>${rets.length}</span></div>`;
-}
-
-// ==================== DASHBOARD ====================
-function renderDash() {
-  let td   =today(), mo=td.slice(0,7);
-  let tInvs=INVOICES.filter(i=>i.date===td);
-  let mInvs=INVOICES.filter(i=>i.date.startsWith(mo));
-  document.getElementById('kpi-td').textContent=fmt(tInvs.reduce((a,i)=>a+i.total,0));
-  document.getElementById('kpi-mo').textContent=fmt(mInvs.reduce((a,i)=>a+i.total,0));
-  document.getElementById('kpi-pr').textContent=fmt(INVOICES.reduce((a,i)=>a+i.profit,0));
-  document.getElementById('kpi-ic').textContent=tInvs.length;
-  let top={};
-  INVOICES.forEach(inv=>inv.lines.forEach(l=>{if(!top[l.name])top[l.name]=0;top[l.name]+=l.qty*l.price;}));
-  let top5=Object.entries(top).sort((a,b)=>b[1]-a[1]).slice(0,5);
-  document.getElementById('d-top').innerHTML=top5.map(([n,v],i)=>
-    `<div class="irow">${i+1}. ${n}<span style="color:var(--ac)">${fmt(v)} ج</span></div>`
-  ).join('')||'<div class="empty" style="padding:12px">لا توجد مبيعات</div>';
-  let ws=ITEMS.filter(i=>i.stock<=i.reorder);
-  document.getElementById('d-warn').innerHTML=ws.map(i=>
-    `<div class="irow">⚠️ ${i.name}<span class="bdg br">${i.stock}</span></div>`
-  ).join('')||'<div style="color:var(--gr)">✅ المخزون جيد</div>';
-  let last=[...INVOICES].reverse().slice(0,3);
-  document.getElementById('d-last').innerHTML=last.map(inv=>
-    `<div class="irow" style="margin-bottom:10px">
-      <div><div style="font-weight:700">${inv.id}</div><div style="font-size:11px;color:var(--t2)">${inv.customer} · ${inv.date}</div></div>
-      <div style="color:var(--ac);font-weight:800">${fmt(inv.total)} ج</div>
-    </div>`
-  ).join('')||'<div class="empty" style="padding:12px">لا توجد فواتير</div>';
-  renderWallets();
-}
-</script>
 </body>
 </html>
